@@ -18,4 +18,4 @@ ADD_CUSTOM_COMMAND(
 		DEPENDS lexer.cpp
 		OUTPUTS parser.cpp parser.hpp )
 
-ADD_EXECUTABLE(cava main.cpp lexer.cpp parser.cpp )
+ADD_EXECUTABLE(nava main.cpp lexer.cpp parser.cpp )
