@@ -1,0 +1,5 @@
+def test(int test, char machin) {
+	if test == 4 {
+		test(3,machin)
+	}
+}
