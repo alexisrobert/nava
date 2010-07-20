@@ -4,3 +4,7 @@ def test(int test, char machin) {
 	}
 	return test
 }
+
+jdef org.nava.testjni() {
+	return 0
+}

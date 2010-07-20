@@ -19,7 +19,7 @@ extern "C" int yywrap() {}
 "if"		return SAVE_TOKEN(TIF);
 "return"	return SAVE_TOKEN(TRETURN);
 
-[a-zA-Z_][a-zA-Z0-9_]*	SAVE_STRING; return TIDENTIFIER;
+[a-zA-Z_][a-zA-Z0-9_.]*	SAVE_STRING; return TIDENTIFIER;
 [0-9]*		SAVE_STRING; return TINTEGER;
 
 "("			return SAVE_TOKEN(TLPAREN);

@@ -6,6 +6,7 @@
 %}
 
 %union {
+std::string *expr;
 std::string *string;
 int token;
 }
@@ -14,6 +15,8 @@ int token;
 %token <token> TDEF TJDEF TIF TRETURN
 %token <token> TCEQ
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
+
+%type <expr> expr
 
 %start program
 
@@ -34,6 +37,9 @@ stmt : if_stmt
 
 block : TLBRACE TRBRACE {}
 	  | TLBRACE stmts TRBRACE {};
+
+expr : TIDENTIFIER { $$ = $1; }
+	 | TINTEGER { $$ = $1; };
 		
 skip_space : /*empty*/ {}
 		   | skip_space TSPACE {}
@@ -41,16 +47,13 @@ skip_space : /*empty*/ {}
 if_stmt : TIF TSPACE TIDENTIFIER TSPACE TCEQ TSPACE TINTEGER skip_space block
 			{ std::cout << "If " << (*$3) << " == " << (*$7) << std::endl; };
 
-return_stmt : TRETURN TSPACE TIDENTIFIER { std::cout << "Return " << (*$3) << std::endl; }
+return_stmt : TRETURN TSPACE expr { std::cout << "Return " << (*$3) << std::endl; }
 
 func_call : TIDENTIFIER skip_space TLPAREN func_call_args TRPAREN { std::cout << "Call to " << (*$1) << std::endl; };
 
 func_call_args : /*empty*/ {}
-			   | func_call_arg {}
-			   | func_call_arg skip_space TCOMMA skip_space func_call_args {};
-
-func_call_arg : TIDENTIFIER { std::cout << "With identifier arg " << (*$1) << std::endl; }
-			  | TINTEGER { std::cout << "With integer arg " << (*$1) << std::endl; }
+			   | expr {}
+			   | expr skip_space TCOMMA skip_space func_call_args {};
 
 func_decl : TDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
 		  		{ std::cout << "Native function definition : " << (*$3) << std::endl; }
