@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.6)
+
 include (${CMAKE_ROOT}/Modules/FindBISON.cmake)
 include (${CMAKE_ROOT}/Modules/FindFLEX.cmake)
 
