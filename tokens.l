@@ -17,6 +17,7 @@ extern "C" int yywrap() {}
 "jdef"		return SAVE_TOKEN(TJDEF);
 "def"		return SAVE_TOKEN(TDEF);
 "if"		return SAVE_TOKEN(TIF);
+"return"	return SAVE_TOKEN(TRETURN);
 
 [a-zA-Z_][a-zA-Z0-9_]*	SAVE_STRING; return TIDENTIFIER;
 [0-9]*		SAVE_STRING; return TINTEGER;

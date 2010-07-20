@@ -11,7 +11,7 @@ int token;
 }
 
 %token <string> TIDENTIFIER TINTEGER
-%token <token> TDEF TJDEF TIF
+%token <token> TDEF TJDEF TIF TRETURN
 %token <token> TCEQ
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
 
@@ -29,7 +29,8 @@ stmts : stmt
 
 stmt : if_stmt
 	 | func_call
-	 | var_decl;
+	 | var_decl
+	 | return_stmt;
 
 block : TLBRACE TRBRACE {}
 	  | TLBRACE stmts TRBRACE {};
@@ -39,6 +40,8 @@ skip_space : /*empty*/ {}
 
 if_stmt : TIF TSPACE TIDENTIFIER TSPACE TCEQ TSPACE TINTEGER skip_space block
 			{ std::cout << "If " << (*$3) << " == " << (*$7) << std::endl; };
+
+return_stmt : TRETURN TSPACE TIDENTIFIER { std::cout << "Return " << (*$3) << std::endl; }
 
 func_call : TIDENTIFIER skip_space TLPAREN func_call_args TRPAREN { std::cout << "Call to " << (*$1) << std::endl; };
 
