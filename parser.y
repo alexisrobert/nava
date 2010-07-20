@@ -39,7 +39,8 @@ block : TLBRACE TRBRACE {}
 	  | TLBRACE stmts TRBRACE {};
 
 expr : TIDENTIFIER { $$ = $1; }
-	 | TINTEGER { $$ = $1; };
+	 | TINTEGER { $$ = $1; }
+	 | func_call { $$ = new std::string(""); };
 		
 skip_space : /*empty*/ {}
 		   | skip_space TSPACE {}
