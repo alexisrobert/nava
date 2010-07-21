@@ -1,8 +1,8 @@
-def test(int test, int machin) {
-	if test == 4 {
-		test(3,machin)
+def test(int var1, int var2) {
+	if var1 >= 4 {
+		test(3, var2)
 	}
-	return test
+	return var1
 }
 
 jdef org.nava.testjni() {

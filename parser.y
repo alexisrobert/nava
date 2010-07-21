@@ -13,10 +13,11 @@ int token;
 
 %token <string> TIDENTIFIER TINTEGER
 %token <token> TDEF TJDEF TIF TRETURN
-%token <token> TCEQ
+%token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
 
 %type <expr> expr
+%type <token> comparison
 
 %start program
 
@@ -45,8 +46,8 @@ expr : TIDENTIFIER { $$ = $1; }
 skip_space : /*empty*/ {}
 		   | skip_space TSPACE {}
 
-if_stmt : TIF TSPACE TIDENTIFIER TSPACE TCEQ TSPACE TINTEGER skip_space block
-			{ std::cout << "If " << (*$3) << " == " << (*$7) << std::endl; };
+if_stmt : TIF TSPACE TIDENTIFIER TSPACE comparison TSPACE TINTEGER skip_space block
+			{ std::cout << "If " << (*$3) << " [comparison] " << (*$7) << std::endl; };
 
 return_stmt : TRETURN TSPACE expr { std::cout << "Return " << (*$3) << std::endl; }
 
@@ -67,5 +68,7 @@ func_decl_args : /* empty */ {}
 			| func_decl_args skip_space TCOMMA skip_space var_decl {};
 			
 var_decl : TIDENTIFIER TSPACE TIDENTIFIER { std::cout << "Argument " << (*$3) << " of type " << (*$1) << std::endl; };
+
+comparison : TCEQ | TCGEQ | TCGT | TCLEQ | TCLT | TCNEQ;
 
 %%
