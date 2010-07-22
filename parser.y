@@ -1,6 +1,7 @@
 %{
 	#include <iostream>
 	#include <stdio.h>
+	#include <string.h>
 	extern int yylex();
 	void yyerror(const char *s) { printf("Syntax error : %s\n", s); }
 %}
@@ -41,13 +42,13 @@ block : TLBRACE TRBRACE {}
 
 expr : TIDENTIFIER { $$ = $1; }
 	 | TINTEGER { $$ = $1; }
-	 | func_call { $$ = new std::string(""); };
+	 | func_call { $$ = new std::string(""); }
+	 | TIDENTIFIER TSPACE comparison TSPACE TINTEGER { $$ = new std::string("If "+(*$1)+" [comparison] "+(*$5)); };
 		
 skip_space : /*empty*/ {}
 		   | skip_space TSPACE {}
 
-if_stmt : TIF TSPACE TIDENTIFIER TSPACE comparison TSPACE TINTEGER skip_space block
-			{ std::cout << "If " << (*$3) << " [comparison] " << (*$7) << std::endl; };
+if_stmt : TIF TSPACE expr skip_space block { std::cout << (*$3) << std::endl; };
 
 return_stmt : TRETURN TSPACE expr { std::cout << "Return " << (*$3) << std::endl; }
 
