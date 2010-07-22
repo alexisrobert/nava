@@ -1,6 +1,7 @@
 %{
 #include <iostream>
 #include <string>
+#include "ast/nodes.h"
 #include "parser.hpp"
 
 #define SAVE_STRING (yylval.string = new std::string(yytext,yyleng))
