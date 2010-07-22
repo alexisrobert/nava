@@ -33,6 +33,13 @@ class StatementsAST {
 	std::vector<ExprAST*> *statements;
 };
 
+class ReturnStmtAST : public ExprAST {
+	ExprAST* Retval;
+
+	public:
+	ReturnStmtAST(ExprAST* retval) : Retval(retval) {};
+};
+
 class FunctionAST {
 	std::string Name;
 	std::vector<std::string> Args;

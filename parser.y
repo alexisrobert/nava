@@ -48,7 +48,7 @@ stmt : if_stmt { $$ = new UnimplementedAST(); }
 	 | func_call { $$ = new UnimplementedAST(); }
 	 | var_decl { $$ = new UnimplementedAST(); }
 	 | var_decl skip_space TEQ skip_space expr { $$ = new UnimplementedAST(); } /* Variable definition with content */
-	 | return_stmt { $$ = new UnimplementedAST(); };
+	 | TRETURN TSPACE expr { $$ = new ReturnStmtAST($3); };
 
 block : TLBRACE TRBRACE { $$ = new StatementsAST(); }
 	  | TLBRACE stmts TRBRACE { $$ = $2; };
@@ -65,8 +65,6 @@ skip_space : /*empty*/ {}
 
 if_stmt : TIF TSPACE expr skip_space block { }
 		| TIF TSPACE expr skip_space block skip_space TELSE skip_space block { };
-
-return_stmt : TRETURN TSPACE expr { }
 
 func_call : TIDENTIFIER skip_space TLPAREN func_call_args TRPAREN { std::cout << "Call to " << (*$1) << std::endl; };
 
