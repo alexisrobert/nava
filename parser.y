@@ -15,10 +15,14 @@
 %token <string> TIDENTIFIER TINTEGER
 %token <token> TDEF TJDEF TIF TELSE TRETURN TEQ
 %token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
+%token <token> TPLUS TMINUS TMULT TDIV
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
 
 %type <expr> expr
 %type <token> comparison
+
+%left TPLUS TMINUS
+%left TMULT TDIV
 
 %start program
 
@@ -35,7 +39,7 @@ stmts : stmt
 stmt : if_stmt
 	 | func_call
 	 | var_decl
-	 | var_decl skip_space TEQ skip_space expr {} /* Variable definition with content */
+	 | var_decl skip_space TEQ skip_space expr { std::cout << "  with content : " << (*$5) << std::endl; } /* Variable definition with content */
 	 | return_stmt;
 
 block : TLBRACE TRBRACE {}
@@ -45,6 +49,7 @@ expr : TIDENTIFIER { $$ = $1; }
 	 | TINTEGER { $$ = $1; }
 	 | func_call { $$ = new std::string("func call"); }
 	 | TIDENTIFIER TSPACE comparison TSPACE TINTEGER { $$ = new std::string("If "+(*$1)+" [comparison] "+(*$5)); }
+	 | expr operator expr { $$ = new std::string((*$1)+" [operator] "+(*$3)); }
 	 | TLPAREN expr TRPAREN { $$ = $2 };
 		
 skip_space : /*empty*/ {}
@@ -74,5 +79,7 @@ func_decl_args : /* empty */ {}
 var_decl : TIDENTIFIER TSPACE TIDENTIFIER { std::cout << "Argument " << (*$3) << " of type " << (*$1) << std::endl; };
 
 comparison : TCEQ | TCGEQ | TCGT | TCLEQ | TCLT | TCNEQ;
+
+operator : TPLUS | TMINUS | TMULT | TDIV;
 
 %%

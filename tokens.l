@@ -37,6 +37,11 @@ extern "C" int yywrap() {}
 "<="		return SAVE_TOKEN(TCLEQ);
 "<"			return SAVE_TOKEN(TCLT);
 
+"+"			return SAVE_TOKEN(TPLUS);
+"-"			return SAVE_TOKEN(TMINUS);
+"*"			return SAVE_TOKEN(TMULT);
+"/"			return SAVE_TOKEN(TDIV);
+
 .			printf("Lexical error : unknown token '%s'.\n", yytext); yyterminate();
 
 %%
