@@ -1,8 +1,12 @@
 def int test(int var1, int var2) {
 	int var_tmp = 5
+	
 	if var1 >= 4 {
 		test(var_tmp, var2)
+	} else {
+		test(var_tmp, var2)
 	}
+
 	return var1
 }
 

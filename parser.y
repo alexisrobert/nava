@@ -13,7 +13,7 @@
 }
 
 %token <string> TIDENTIFIER TINTEGER
-%token <token> TDEF TJDEF TIF TRETURN TEQ
+%token <token> TDEF TJDEF TIF TELSE TRETURN TEQ
 %token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
 
@@ -44,12 +44,14 @@ block : TLBRACE TRBRACE {}
 expr : TIDENTIFIER { $$ = $1; }
 	 | TINTEGER { $$ = $1; }
 	 | func_call { $$ = new std::string("func call"); }
-	 | TIDENTIFIER TSPACE comparison TSPACE TINTEGER { $$ = new std::string("If "+(*$1)+" [comparison] "+(*$5)); };
+	 | TIDENTIFIER TSPACE comparison TSPACE TINTEGER { $$ = new std::string("If "+(*$1)+" [comparison] "+(*$5)); }
+	 | TLPAREN expr TRPAREN { $$ = $2 };
 		
 skip_space : /*empty*/ {}
 		   | skip_space TSPACE {}
 
-if_stmt : TIF TSPACE expr skip_space block { std::cout << (*$3) << std::endl; };
+if_stmt : TIF TSPACE expr skip_space block { std::cout << (*$3) << std::endl; }
+		| TIF TSPACE expr skip_space block skip_space TELSE skip_space block { std::cout << (*$3) << " (with else)" << std::endl; };
 
 return_stmt : TRETURN TSPACE expr { std::cout << "Return " << (*$3) << std::endl; }
 
