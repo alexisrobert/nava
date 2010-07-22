@@ -7,13 +7,13 @@
 %}
 
 %union {
-std::string *expr;
-std::string *string;
-int token;
+	std::string *expr;
+	std::string *string;
+	int token;
 }
 
 %token <string> TIDENTIFIER TINTEGER
-%token <token> TDEF TJDEF TIF TRETURN
+%token <token> TDEF TJDEF TIF TRETURN TEQ
 %token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
 
@@ -35,6 +35,7 @@ stmts : stmt
 stmt : if_stmt
 	 | func_call
 	 | var_decl
+	 | var_decl skip_space TEQ skip_space expr {} /* Variable definition with content */
 	 | return_stmt;
 
 block : TLBRACE TRBRACE {}

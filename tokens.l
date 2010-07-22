@@ -27,6 +27,8 @@ extern "C" int yywrap() {}
 "{"			return SAVE_TOKEN(TLBRACE);
 "}"			return SAVE_TOKEN(TRBRACE);
 
+"="			return SAVE_TOKEN(TEQ);
+
 "!="		return SAVE_TOKEN(TCNEQ);
 "=="		return SAVE_TOKEN(TCEQ);
 ">="		return SAVE_TOKEN(TCGEQ);
