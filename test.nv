@@ -1,10 +1,10 @@
-def test(int var1, int var2) {
+def int test(int var1, int var2) {
 	if var1 >= 4 {
 		test(3, var2)
 	}
 	return var1
 }
 
-jdef org.nava.testjni() {
+jdef int org.nava.testjni() {
 	return test(3,4)
 }

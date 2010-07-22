@@ -42,7 +42,7 @@ block : TLBRACE TRBRACE {}
 
 expr : TIDENTIFIER { $$ = $1; }
 	 | TINTEGER { $$ = $1; }
-	 | func_call { $$ = new std::string(""); }
+	 | func_call { $$ = new std::string("func call"); }
 	 | TIDENTIFIER TSPACE comparison TSPACE TINTEGER { $$ = new std::string("If "+(*$1)+" [comparison] "+(*$5)); };
 		
 skip_space : /*empty*/ {}
@@ -58,10 +58,10 @@ func_call_args : /*empty*/ {}
 			   | expr {}
 			   | expr skip_space TCOMMA skip_space func_call_args {};
 
-func_decl : TDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
-		  		{ std::cout << "Native function definition : " << (*$3) << std::endl; }
-			| TJDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
-				{ std::cout << "JNI function definition : " << (*$3) << std::endl; }
+func_decl : TDEF TSPACE TIDENTIFIER TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
+		  		{ std::cout << "Native function definition : " << (*$5) << std::endl; }
+			| TJDEF TSPACE TIDENTIFIER TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
+				{ std::cout << "JNI function definition : " << (*$5) << std::endl; }
 			;
 
 func_decl_args : /* empty */ {}
