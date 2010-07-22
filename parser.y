@@ -10,6 +10,7 @@
 
 %union {
 	ExprAST *expr;
+	StatementsAST *stmts;
 	FunctionAST *func;
 	std::string *string;
 	int token;
@@ -22,9 +23,11 @@
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
 
 %type <func> func_decl
-%type <expr> expr
+%type <expr> expr stmt
+%type <stmts> stmts block
 %type <token> comparison bin_operator
 
+%left TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %left TPLUS TMINUS
 %left TMULT TDIV
 
@@ -38,17 +41,17 @@ func_stmts : func_decl
 		   | stmt
 		   | func_stmts func_decl;
 
-stmts : stmt
-	  | stmts stmt;
+stmts : stmt { $$ = new StatementsAST(); $$->statements->push_back($1); }
+	  | stmts stmt { $$->statements->push_back($2); };
 
-stmt : if_stmt
-	 | func_call
-	 | var_decl
-	 | var_decl skip_space TEQ skip_space expr { } /* Variable definition with content */
-	 | return_stmt;
+stmt : if_stmt { $$ = new UnimplementedAST(); }
+	 | func_call { $$ = new UnimplementedAST(); }
+	 | var_decl { $$ = new UnimplementedAST(); }
+	 | var_decl skip_space TEQ skip_space expr { $$ = new UnimplementedAST(); } /* Variable definition with content */
+	 | return_stmt { $$ = new UnimplementedAST(); };
 
-block : TLBRACE TRBRACE { }
-	  | TLBRACE stmts TRBRACE {};
+block : TLBRACE TRBRACE { $$ = new StatementsAST(); }
+	  | TLBRACE stmts TRBRACE { $$ = $2; };
 
 expr : TIDENTIFIER { $$ = new VariableExprAST(*$1); delete $1; }
 	 | TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
@@ -72,9 +75,9 @@ func_call_args : /*empty*/ {}
 			   | expr skip_space TCOMMA skip_space func_call_args {};
 
 func_decl : TDEF TSPACE TIDENTIFIER TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
-		  		{ $$ = new FunctionAST((*$5), std::vector<std::string>(), NULL); }
+		  		{ $$ = new FunctionAST((*$5), std::vector<std::string>(), $10); }
 			| TJDEF TSPACE TIDENTIFIER TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
-				{ $$ = new FunctionAST((*$5), std::vector<std::string>(), NULL); }
+				{ $$ = new FunctionAST((*$5), std::vector<std::string>(), $10); }
 			;
 
 func_decl_args : /* empty */ {}

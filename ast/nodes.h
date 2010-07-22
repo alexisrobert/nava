@@ -27,13 +27,19 @@ class BinaryExprAST : public ExprAST {
 	BinaryExprAST(int op, ExprAST *lhs, ExprAST *rhs, bool native = true) : Op(op), LHS(lhs), RHS(rhs), Native(native) {};
 };
 
+class StatementsAST {
+	public:
+	StatementsAST() { this->statements = new std::vector<ExprAST*>(); };
+	std::vector<ExprAST*> *statements;
+};
+
 class FunctionAST {
 	std::string Name;
 	std::vector<std::string> Args;
-	ExprAST *Body;
+	StatementsAST *Body;
 
 	public:
-	FunctionAST(const std::string &name, const std::vector<std::string> &args, ExprAST *body) : Name(name), Args(args), Body(body) {};
+	FunctionAST(const std::string &name, const std::vector<std::string> &args, StatementsAST *body) : Name(name), Args(args), Body(body) {};
 };
 
 class UnimplementedAST : public ExprAST {
