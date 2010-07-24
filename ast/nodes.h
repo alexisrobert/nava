@@ -1,7 +1,15 @@
 #include <string>
 #include <vector>
 
+#include <llvm/DerivedTypes.h>
+#include <llvm/LLVMContext.h>
+#include <llvm/Module.h>
+#include <llvm/Analysis/Verifier.h>
+#include <llvm/Support/IRBuilder.h>
+
 class ExprAST {
+	public:
+		virtual llvm::Value* Codegen() {};
 };
 
 class IntegerExprAST : public ExprAST {
@@ -9,6 +17,7 @@ class IntegerExprAST : public ExprAST {
 
 	public:
 	IntegerExprAST(int val) : Val(val) {}
+	llvm::Value* Codegen();
 };
 
 class VariableExprAST : public ExprAST {
@@ -21,10 +30,9 @@ class VariableExprAST : public ExprAST {
 class BinaryExprAST : public ExprAST {
 	int Op;
 	ExprAST *LHS, *RHS;
-	bool Native;
 
 	public:
-	BinaryExprAST(int op, ExprAST *lhs, ExprAST *rhs, bool native = true) : Op(op), LHS(lhs), RHS(rhs), Native(native) {};
+	BinaryExprAST(int op, ExprAST *lhs, ExprAST *rhs) : Op(op), LHS(lhs), RHS(rhs) {};
 };
 
 class StatementsAST {
