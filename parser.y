@@ -37,9 +37,9 @@
 
 program : func_stmts;
 
-func_stmts : func_decl
-		   | stmt
-		   | func_stmts func_decl;
+func_stmts : func_decl { $1->Codegen()->dump(); };
+		   /*| stmt*/
+		   | func_stmts func_decl { $2->Codegen()->dump(); };
 
 stmts : stmt { $$ = new StatementsAST(); $$->statements->push_back($1); }
 	  | stmts stmt { $$->statements->push_back($2); };

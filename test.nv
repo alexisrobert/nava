@@ -9,7 +9,3 @@ def int test(int var1, int var2) {
 
 	return var1
 }
-
-jdef int org.nava.testjni() {
-	return test(3,4)
-}
