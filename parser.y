@@ -46,8 +46,7 @@ stmts : stmt { $$ = new StatementsAST(); $$->statements->push_back($1); }
 
 stmt : if_stmt { $$ = new UnimplementedAST(); }
 	 | func_call { $$ = new UnimplementedAST(); }
-	 | var_decl { $$ = new UnimplementedAST(); }
-	 | var_decl skip_space TEQ skip_space expr { $$ = new UnimplementedAST(); } /* Variable definition with content */
+	 | TIDENTIFIER skip_space TEQ skip_space expr { $$ = new UnimplementedAST(); } /* Variable definition with content */
 	 | TRETURN TSPACE expr { $$ = new ReturnStmtAST($3); };
 
 block : TLBRACE TRBRACE { $$ = new StatementsAST(); }
@@ -72,17 +71,15 @@ func_call_args : /*empty*/ {}
 			   | expr {}
 			   | expr skip_space TCOMMA skip_space func_call_args {};
 
-func_decl : TDEF TSPACE TIDENTIFIER TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
-		  		{ $$ = new FunctionAST((*$5), std::vector<std::string>(), $10); }
-			| TJDEF TSPACE TIDENTIFIER TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
-				{ $$ = new FunctionAST((*$5), std::vector<std::string>(), $10); }
+func_decl : TDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
+		  		{ $$ = new FunctionAST((*$3), std::vector<std::string>(), $8); }
+			| TJDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
+				{ $$ = new FunctionAST((*$3), std::vector<std::string>(), $8); }
 			;
 
 func_decl_args : /* empty */ {}
-			| var_decl {}
-			| func_decl_args skip_space TCOMMA skip_space var_decl {};
-			
-var_decl : TIDENTIFIER TSPACE TIDENTIFIER { std::cout << "Argument " << (*$3) << " of type " << (*$1) << std::endl; };
+			| TIDENTIFIER {}
+			| func_decl_args skip_space TCOMMA skip_space TIDENTIFIER {};
 
 comparison : TCEQ | TCGEQ | TCGT | TCLEQ | TCLT | TCNEQ;
 

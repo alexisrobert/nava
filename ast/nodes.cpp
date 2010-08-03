@@ -19,5 +19,7 @@ llvm::Function *FunctionAST::Codegen() {
 	BasicBlock *BB = BasicBlock::Create(getGlobalContext(), "entry", F);
 	Builder.SetInsertPoint(BB);
 	
+	//verifyFunction(*F);
+
 	return F;
 }
