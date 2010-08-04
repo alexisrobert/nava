@@ -15,11 +15,7 @@ extern "C" int yywrap() {}
 [\n\t]		;
 ","			return SAVE_TOKEN(TCOMMA);
 
-"jdef"		return SAVE_TOKEN(TJDEF);
 "def"		return SAVE_TOKEN(TDEF);
-"if"		return SAVE_TOKEN(TIF);
-"else"		return SAVE_TOKEN(TELSE);
-"return"	return SAVE_TOKEN(TRETURN);
 
 [a-zA-Z_][a-zA-Z0-9_.]*	SAVE_STRING; return TIDENTIFIER;
 [0-9]*		SAVE_STRING; return TINTEGER;
