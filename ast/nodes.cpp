@@ -55,16 +55,16 @@ Value *BinaryExprAST::Codegen() {
 // TODO : Remove the NamedValue symbol table for a recursive stack based approach
 Value *VariableExprAST::Codegen() {
 	Value *V = NamedValues[Name];
-	return V ? V : ErrorV("Variable name not found in symbol table."); 
+	return V ? V : ErrorV((std::string("Variable '")+Name+"' not found in symbol table.").c_str()); 
 }
 
 Value *CallExprAST::Codegen() {
 	Function *CalleeF = TheModule->getFunction(Name);
 	if (CalleeF == 0)
-		return ErrorV("Unknown function");
+		return ErrorV((std::string("Unknown function : ")+Name).c_str());
 
 	if (CalleeF->arg_size() != Args->size())
-		return ErrorV("Arguments number mismatch");
+		return ErrorV((std::string("Wrong argument numbers for '")+Name+"'").c_str());
 
 	std::vector<Value*> ArgsV;
 	for (unsigned int i = 0, e = Args->size(); i != e; ++i) {

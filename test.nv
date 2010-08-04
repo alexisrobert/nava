@@ -1,3 +1,7 @@
 def test(var1, var2) {
-	var1+(2*3)
+	var1+(2*var2)
+}
+
+def main() {
+	test(1,2)
 }
