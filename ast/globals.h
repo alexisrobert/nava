@@ -8,4 +8,4 @@ extern llvm::ExecutionEngine *TheExecutionEngine;
 extern llvm::FunctionPassManager *TheFPM;
 
 static llvm::IRBuilder<> Builder(llvm::getGlobalContext());
-static std::map<std::string, llvm::Value*> NamedValues;
+extern std::map<std::string, llvm::Value*> NamedValues;

@@ -11,6 +11,7 @@ extern int yyparse();
 llvm::Module *TheModule;
 llvm::ExecutionEngine *TheExecutionEngine;
 llvm::FunctionPassManager *TheFPM;
+std::map<std::string, llvm::Value*> NamedValues;
 
 int main(int argc, char **argv) {
 	TheModule = new llvm::Module("nava", llvm::getGlobalContext());
