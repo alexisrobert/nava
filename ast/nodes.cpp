@@ -58,4 +58,19 @@ Value *VariableExprAST::Codegen() {
 	return V ? V : ErrorV("Variable name not found in symbol table."); 
 }
 
+Value *CallExprAST::Codegen() {
+	Function *CalleeF = TheModule->getFunction(Name);
+	if (CalleeF == 0)
+		return ErrorV("Unknown function");
 
+	if (CalleeF->arg_size() != Args->size())
+		return ErrorV("Arguments number mismatch");
+
+	std::vector<Value*> ArgsV;
+	for (unsigned int i = 0, e = Args->size(); i != e; ++i) {
+		ArgsV.push_back((*Args)[i]->Codegen());
+		if (ArgsV.back() == 0) return 0;
+	}
+
+	return Builder.CreateCall(CalleeF, ArgsV.begin(), ArgsV.end(), "calltmp");
+}

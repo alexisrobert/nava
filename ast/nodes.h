@@ -30,6 +30,15 @@ class VariableExprAST : public ExprAST {
 	llvm::Value* Codegen();
 };
 
+class CallExprAST : public ExprAST {
+	std::string Name;
+	std::vector<ExprAST*> *Args;
+
+	public:
+	CallExprAST(const std::string &name, std::vector<ExprAST*> *args) : Name(name), Args(args) {};
+	llvm::Value* Codegen();
+};
+
 class FunctionAST {
 	std::string Name;
 	std::vector<std::string> *Args;

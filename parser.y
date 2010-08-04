@@ -12,6 +12,7 @@
 	ExprAST *expr;
 	FunctionAST *func;
 	std::vector<std::string> *funcdeclargs;
+	std::vector<ExprAST*> *funcargs;
 	std::string *string;
 	int token;
 }
@@ -24,6 +25,7 @@
 
 %type <func> func_decl
 %type <funcdeclargs> func_decl_args
+%type <funcargs> func_call_args
 %type <expr> expr block
 %type <token> comparison bin_operator
 
@@ -44,7 +46,7 @@ block : TLBRACE skip_space expr skip_space TRBRACE { $$ = $3; }
 	  | TLBRACE skip_space TRBRACE { $$ = 0; }
 
 expr : TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
-	 | func_call { $$ = new UnimplementedAST(); }
+	 | TIDENTIFIER skip_space TLPAREN func_call_args TRPAREN { $$ = new CallExprAST((*$1), $4); delete $1; }
 	 | TIDENTIFIER { $$ = new VariableExprAST((*$1)); delete $1; }
 	 | expr skip_space comparison skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
 	 | expr skip_space bin_operator skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
@@ -53,11 +55,9 @@ expr : TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
 skip_space : /*empty*/ {}
 		   | skip_space TSPACE {}
 
-func_call : TIDENTIFIER skip_space TLPAREN func_call_args TRPAREN { std::cout << "Call to " << (*$1) << std::endl; };
-
-func_call_args : /*empty*/ {}
-			   | expr {}
-			   | expr skip_space TCOMMA skip_space func_call_args {};
+func_call_args : /*empty*/ { $$ = new std::vector<ExprAST*>(); }
+			   | expr { $$ = new std::vector<ExprAST*>(); $$->push_back($1); }
+			   | func_call_args skip_space TCOMMA skip_space expr { $$->push_back($5); };
 
 func_decl : TDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
 		  		{ $$ = new FunctionAST((*$3), $5, $8); };
