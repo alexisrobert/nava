@@ -76,6 +76,8 @@ Function *FunctionAST::Codegen() {
 		/* Optimize the function */
 		TheFPM->run(*F);
 
+		F->dump();
+
 		return F;
 	}
 
@@ -83,10 +85,9 @@ Function *FunctionAST::Codegen() {
 }
 
 void FunctionAST::execute() {
-	if (Body == 0x00) { this->Codegen(); return; }
+	if (Body == 0x00) { this->Codegen()->dump(); return; }
 
 	Function *LF = this->Codegen();
-	LF->dump();
 
 	void *FPtr = TheExecutionEngine->getPointerToFunction(LF);
 
