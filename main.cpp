@@ -6,12 +6,15 @@
 #include <llvm/PassManager.h>
 #include <llvm/Target/TargetData.h>
 #include <llvm/Target/TargetSelect.h>
+#include <llvm/Support/IRBuilder.h>
 
 extern int yyparse();
 llvm::Module *TheModule;
 llvm::ExecutionEngine *TheExecutionEngine;
 llvm::FunctionPassManager *TheFPM;
 std::map<std::string, llvm::Value*> NamedValues;
+llvm::IRBuilder<> Builder(llvm::getGlobalContext());
+
 
 int main(int argc, char **argv) {
 	TheModule = new llvm::Module("nava", llvm::getGlobalContext());

@@ -7,5 +7,5 @@ extern llvm::Module *TheModule;
 extern llvm::ExecutionEngine *TheExecutionEngine;
 extern llvm::FunctionPassManager *TheFPM;
 
-static llvm::IRBuilder<> Builder(llvm::getGlobalContext());
+extern llvm::IRBuilder<> Builder;
 extern std::map<std::string, llvm::Value*> NamedValues;

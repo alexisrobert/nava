@@ -8,8 +8,7 @@
 using namespace llvm;
 
 Value *UnimplementedAST::Codegen() {
-	std::cerr << "ERROR ! Unimplemented AST node met !" << std::endl;
-	return 0;
+	return ErrorV("Unimplemented AST node met.");
 }
 
 Value *IntegerExprAST::Codegen() {
@@ -49,7 +48,7 @@ Value *BinaryExprAST::Codegen() {
 		case TCNEQ:
 					L = Builder.CreateFCmpUNE(L, R, "cmptmp");
 					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
-		default: std::cerr << "Invalid binary op met!" << std::endl; return 0;
+		default: ErrorV("Unknown binary op met!");
 	}
 }
 

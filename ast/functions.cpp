@@ -26,7 +26,7 @@ Function *FunctionAST::Codegen() {
 	Builder.SetInsertPoint(BB);
 
 	if (Value *RetVal = Body->Codegen()) {
-		Builder.CreateRet(Body->Codegen());
+		Builder.CreateRet(RetVal);
 	
 		/* Verify the function */
 		verifyFunction(*F);
@@ -50,8 +50,8 @@ void FunctionAST::execute() {
 		return;
 	}
 
+	// We only execute functions with no arguments
 	if (this->Args->size() != 0) {
-		std::cout << "Function with multiple arguments, not executing." << std::endl;
 		return;
 	}
 
