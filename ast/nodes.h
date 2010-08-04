@@ -8,7 +8,11 @@
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Support/IRBuilder.h>
 
-static llvm::Value *ErrorV(const char *Str) { std::cerr << "Compile error : " << Str << std::endl; return 0; }
+extern int yyget_lineno();
+static llvm::Value *ErrorV(const char *Str) {
+	std::cerr << "line " << yyget_lineno() << ": " << Str << std::endl;
+	return 0;
+}
 
 class ExprAST {
 	public:

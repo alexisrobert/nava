@@ -5,7 +5,8 @@
 	#include "ast/nodes.h"
 
 	extern int yylex();
-	void yyerror(const char *s) { printf("Syntax error : %s\n", s); }
+	extern int yyget_lineno();
+	void yyerror(const char *s) { printf("line %d: %s\n", yyget_lineno(), s); }
 %}
 
 %union {

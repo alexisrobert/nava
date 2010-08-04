@@ -7,12 +7,14 @@
 #define SAVE_STRING (yylval.string = new std::string(yytext,yyleng))
 #define SAVE_TOKEN(t) (yylval.token = t)
 extern "C" int yywrap() {}
+extern int yylineno;
 %}
 
 %%
 
 " "			return SAVE_TOKEN(TSPACE);
-[\n\t]		;
+\n			yylineno++;
+\t			;
 ","			return SAVE_TOKEN(TCOMMA);
 
 "def"		return SAVE_TOKEN(TDEF);

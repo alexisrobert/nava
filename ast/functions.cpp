@@ -44,11 +44,12 @@ Function *FunctionAST::Codegen() {
 
 void FunctionAST::execute() {
 	Function *LF = this->Codegen();
-	if (Body == 0 || LF != 0) LF->dump();
 
 	if (LF == 0) {
 		return;
 	}
+
+	LF->dump();
 
 	// We only execute functions with no arguments
 	if (this->Args->size() != 0) {
