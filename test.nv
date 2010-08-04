@@ -1,5 +1,9 @@
 def test(var1, var2) {
-	var1+(2*var2)
+	if var1 > 2 {
+		var2
+	} else {
+		var1
+	}
 }
 
 def main() {

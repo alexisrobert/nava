@@ -27,7 +27,7 @@
 %type <func> func_decl
 %type <funcdeclargs> func_decl_args
 %type <funcargs> func_call_args
-%type <expr> expr block
+%type <expr> expr block stmt
 %type <token> comparison bin_operator
 
 %left TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
@@ -43,8 +43,13 @@ program : func_stmts;
 func_stmts : func_decl { $1->execute(); };
 		   | func_stmts func_decl { $2->execute(); };
 
-block : TLBRACE skip_space expr skip_space TRBRACE { $$ = $3; }
+block : TLBRACE skip_space stmt skip_space TRBRACE { $$ = $3; }
 	  | TLBRACE skip_space TRBRACE { $$ = 0; }
+
+stmt : expr { $$ = $1 }
+	| TIF skip_space expr skip_space block skip_space TELSE skip_space block
+	 	{ $$ = new IfExprAST($3, $5, $9); };
+
 
 expr : TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
 	 | TIDENTIFIER skip_space TLPAREN func_call_args TRPAREN { $$ = new CallExprAST((*$1), $4); delete $1; }

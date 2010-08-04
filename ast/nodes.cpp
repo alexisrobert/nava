@@ -74,3 +74,48 @@ Value *CallExprAST::Codegen() {
 
 	return Builder.CreateCall(CalleeF, ArgsV.begin(), ArgsV.end(), "calltmp");
 }
+
+Value *IfExprAST::Codegen() {
+	// Create the comparaison part
+	Value *CondV = Cond->Codegen();
+	if (CondV == 0) return 0;
+
+	CondV = Builder.CreateFCmpONE(CondV, ConstantFP::get(getGlobalContext(), APFloat(0.0)), "ifcond");
+
+	// Create the condition switch
+	Function *TheFunction = Builder.GetInsertBlock()->getParent();
+
+	BasicBlock *ThenBB = BasicBlock::Create(getGlobalContext(), "then", TheFunction);
+	BasicBlock *ElseBB = BasicBlock::Create(getGlobalContext(), "else");
+	BasicBlock *MergeBB = BasicBlock::Create(getGlobalContext(), "ifcont");
+
+	Builder.CreateCondBr(CondV, ThenBB, ElseBB);
+	Builder.SetInsertPoint(ThenBB);
+
+	// Insert into the "then" part
+	Value *ThenV = Then->Codegen();
+	if (ThenV == 0) return 0;
+
+	Builder.CreateBr(MergeBB);
+	ThenBB = Builder.GetInsertBlock(); // Update ThenBB pointer for PHI
+
+	// Insert into the "else" part
+	TheFunction->getBasicBlockList().push_back(ElseBB);
+	Builder.SetInsertPoint(ElseBB);
+
+	Value *ElseV = Else->Codegen();
+	if (ElseV == 0) return 0;
+
+	Builder.CreateBr(MergeBB);
+	ElseBB = Builder.GetInsertBlock(); // Update ElseBB ptr for PHI
+
+	// Create the merge block and PHI stuff
+	TheFunction->getBasicBlockList().push_back(MergeBB);
+	Builder.SetInsertPoint(MergeBB);
+
+	PHINode *PN = Builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), "iftmp");
+	PN->addIncoming(ThenV, ThenBB);
+	PN->addIncoming(ElseV, ElseBB);
+
+	return PN;
+}

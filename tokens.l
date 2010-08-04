@@ -19,6 +19,9 @@ extern int yylineno;
 
 "def"		return SAVE_TOKEN(TDEF);
 
+"if"		return SAVE_TOKEN(TIF);
+"else"		return SAVE_TOKEN(TELSE);
+
 [a-zA-Z_][a-zA-Z0-9_.]*	SAVE_STRING; return TIDENTIFIER;
 [0-9]*		SAVE_STRING; return TINTEGER;
 

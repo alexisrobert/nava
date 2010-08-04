@@ -16,7 +16,7 @@ static llvm::Value *ErrorV(const char *Str) {
 
 class ExprAST {
 	public:
-	virtual llvm::Value* Codegen() {};
+	virtual llvm::Value* Codegen() = 0;
 };
 
 class StatementsAST : public ExprAST {
@@ -68,6 +68,14 @@ class BinaryExprAST : public ExprAST {
 
 	public:
 	BinaryExprAST(int op, ExprAST *lhs, ExprAST *rhs) : Op(op), LHS(lhs), RHS(rhs) {};
+	llvm::Value* Codegen();
+};
+
+class IfExprAST : public ExprAST {
+	ExprAST *Cond, *Then, *Else;
+
+	public:
+	IfExprAST(ExprAST *cond, ExprAST *then, ExprAST *_else) : Cond(cond), Then(then), Else(_else) {};
 	llvm::Value* Codegen();
 };
 
