@@ -53,6 +53,12 @@ Value *BinaryExprAST::Codegen() {
 	}
 }
 
+// TODO : Remove the NamedValue symbol table for a recursive stack based approach
+Value *VariableExprAST::Codegen() {
+	Value *V = NamedValues[Name];
+	return V ? V : ErrorV("Variable name not found in symbol table."); 
+}
+
 Function *FunctionAST::Codegen() {
 	/* Creating function prototype */
 	std::vector<const Type*> Integers(Args.size(), Type::getDoubleTy(getGlobalContext()));
@@ -76,18 +82,21 @@ Function *FunctionAST::Codegen() {
 		/* Optimize the function */
 		TheFPM->run(*F);
 
-		F->dump();
-
 		return F;
 	}
+
+	// TODO : Error occured during bytecode generation, remove the function from symbols.
 
 	return 0;
 }
 
 void FunctionAST::execute() {
-	if (Body == 0x00) { this->Codegen()->dump(); return; }
-
 	Function *LF = this->Codegen();
+	if (Body == 0 || LF != 0) LF->dump();
+
+	if (LF == 0) {
+		return;
+	}
 
 	void *FPtr = TheExecutionEngine->getPointerToFunction(LF);
 

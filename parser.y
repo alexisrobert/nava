@@ -43,6 +43,7 @@ block : TLBRACE skip_space expr skip_space TRBRACE { $$ = $3; }
 
 expr : TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
 	 | func_call { $$ = new UnimplementedAST(); }
+	 | TIDENTIFIER { $$ = new VariableExprAST((*$1)); delete $1; }
 	 | expr skip_space comparison skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
 	 | expr skip_space bin_operator skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
 	 | TLPAREN expr TRPAREN { $$ = $2 };

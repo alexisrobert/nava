@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <llvm/DerivedTypes.h>
 #include <llvm/LLVMContext.h>
@@ -7,9 +8,11 @@
 #include <llvm/Analysis/Verifier.h>
 #include <llvm/Support/IRBuilder.h>
 
+static llvm::Value *ErrorV(const char *Str) { std::cerr << "Compile error : " << Str << std::endl; return 0; }
+
 class ExprAST {
 	public:
-		virtual llvm::Value* Codegen() {};
+	virtual llvm::Value* Codegen() {};
 };
 
 class StatementsAST : public ExprAST {
@@ -17,6 +20,14 @@ class StatementsAST : public ExprAST {
 	StatementsAST() { this->statements = new std::vector<ExprAST*>(); };
 	llvm::BasicBlock* Codegen();
 	std::vector<ExprAST*> *statements;
+};
+
+class VariableExprAST : public ExprAST {
+	std::string Name;
+
+	public:
+	VariableExprAST(const std::string &name) : Name(name) {};
+	llvm::Value* Codegen();
 };
 
 class FunctionAST {
@@ -49,5 +60,5 @@ class BinaryExprAST : public ExprAST {
 
 class UnimplementedAST : public ExprAST {
 	public:
-		llvm::Value* Codegen();
+	llvm::Value* Codegen();
 };
