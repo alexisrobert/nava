@@ -4,6 +4,7 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>
 #include <llvm/PassManager.h>
+#include <llvm/LinkAllPasses.h>
 #include <llvm/Target/TargetData.h>
 #include <llvm/Target/TargetSelect.h>
 #include <llvm/Support/IRBuilder.h>
@@ -23,10 +24,13 @@ int main(int argc, char **argv) {
 	llvm::InitializeNativeTarget();
 	TheExecutionEngine = llvm::EngineBuilder(TheModule).create();
 
-	/* Initialize the optimizer */
+	/* Initialize the bytecode optimizer */
 	TheFPM = new llvm::FunctionPassManager(TheModule);
 	TheFPM->add(new llvm::TargetData(*TheExecutionEngine->getTargetData()));
-	// Add passes here
+	TheFPM->add(llvm::createInstructionCombiningPass());
+	TheFPM->add(llvm::createReassociatePass());
+	TheFPM->add(llvm::createGVNPass());
+	TheFPM->add(llvm::createCFGSimplificationPass());
 	TheFPM->doInitialization();
 	
 	yyparse();
