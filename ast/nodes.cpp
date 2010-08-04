@@ -13,7 +13,7 @@ Value *UnimplementedAST::Codegen() {
 }
 
 Value *IntegerExprAST::Codegen() {
-	return ConstantInt::get(Type::getInt32Ty(getGlobalContext()), Val);
+	return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), (double)Val);
 }
 
 Value *BinaryExprAST::Codegen() {
@@ -28,38 +28,40 @@ Value *BinaryExprAST::Codegen() {
 
 		/* Comparaison operators */
 		case TCLT:
-					L = Builder.CreateICmpSLT(L, R, "cmptmp");
+					L = Builder.CreateFCmpULT(L, R, "cmptmp");
 
 					// Convert i1 (boolean) to i32 (signed integer 32bits)
-					return Builder.CreateZExt(L, Type::getInt32Ty(getGlobalContext()));
+					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
 		case TCLEQ:
-					L = Builder.CreateICmpSLE(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getInt32Ty(getGlobalContext()));
+					L = Builder.CreateFCmpULE(L, R, "cmptmp");
+					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
 
 		case TCGT:
-					L = Builder.CreateICmpSGT(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getInt32Ty(getGlobalContext()));
+					L = Builder.CreateFCmpUGT(L, R, "cmptmp");
+					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
 		case TCGEQ:
-					L = Builder.CreateICmpSGE(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getInt32Ty(getGlobalContext()));
+					L = Builder.CreateFCmpUGE(L, R, "cmptmp");
+					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
 
 		case TCEQ:
-					L = Builder.CreateICmpEQ(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getInt32Ty(getGlobalContext()));
+					L = Builder.CreateFCmpUEQ(L, R, "cmptmp");
+					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
 		case TCNEQ:
-					L = Builder.CreateICmpNE(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getInt32Ty(getGlobalContext()));
+					L = Builder.CreateFCmpUNE(L, R, "cmptmp");
+					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
 		default: std::cerr << "Invalid binary op met!" << std::endl; return 0;
 	}
 }
 
 Function *FunctionAST::Codegen() {
 	/* Creating function prototype */
-	std::vector<const Type*> Integers(Args.size(), Type::getInt32Ty(getGlobalContext()));
+	std::vector<const Type*> Integers(Args.size(), Type::getDoubleTy(getGlobalContext()));
 
-	FunctionType *FT = FunctionType::get(Type::getInt32Ty(getGlobalContext()), Integers, false);
+	FunctionType *FT = FunctionType::get(Type::getDoubleTy(getGlobalContext()), Integers, false);
 
 	Function *F = Function::Create(FT, Function::ExternalLinkage, Name, TheModule);
+
+	if (Body == 0x00) return 0; // body == 0x00 => this is an extern, we just add it in LLVM's symbol table.
 
 	/* Filling function code */
 	BasicBlock *BB = BasicBlock::Create(getGlobalContext(), "entry", F);
@@ -71,8 +73,23 @@ Function *FunctionAST::Codegen() {
 		/* Verify the function */
 		verifyFunction(*F);
 
+		/* Optimize the function */
+		TheFPM->run(*F);
+
 		return F;
 	}
 
 	return 0;
+}
+
+void FunctionAST::execute() {
+	if (Body == 0x00) { this->Codegen(); return; }
+
+	Function *LF = this->Codegen();
+	LF->dump();
+
+	void *FPtr = TheExecutionEngine->getPointerToFunction(LF);
+
+	double (*FP)() = (double (*)())(intptr_t)FPtr;
+	std::cout << "Evaluated to : " << FP() << std::endl;
 }

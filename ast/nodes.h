@@ -27,6 +27,7 @@ class FunctionAST {
 	public:
 	FunctionAST(const std::string &name, const std::vector<std::string> &args, ExprAST *body) : Name(name), Args(args), Body(body) {};
 	llvm::Function* Codegen();
+	void execute();
 };
 
 class IntegerExprAST : public ExprAST {
