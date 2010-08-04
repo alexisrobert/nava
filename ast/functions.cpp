@@ -49,7 +49,7 @@ void FunctionAST::execute() {
 		return;
 	}
 
-	LF->dump();
+	//LF->dump();
 
 	// We only execute functions with no arguments
 	if (this->Args->size() != 0) {
@@ -59,5 +59,5 @@ void FunctionAST::execute() {
 	void *FPtr = TheExecutionEngine->getPointerToFunction(LF);
 
 	double (*FP)() = (double (*)())(intptr_t)FPtr;
-	std::cout << "Evaluated to : " << FP() << std::endl;
+	std::cout << Name << "() returns " << FP() << std::endl;
 }
