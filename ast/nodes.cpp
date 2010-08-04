@@ -30,25 +30,25 @@ Value *BinaryExprAST::Codegen() {
 		case TCLT:
 					L = Builder.CreateFCmpULT(L, R, "cmptmp");
 
-					// Convert i1 (boolean) to i32 (signed integer 32bits)
-					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
+					// Convert i1 (boolean) to double
+					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
 		case TCLEQ:
 					L = Builder.CreateFCmpULE(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
+					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
 
 		case TCGT:
 					L = Builder.CreateFCmpUGT(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
+					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
 		case TCGEQ:
 					L = Builder.CreateFCmpUGE(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
+					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
 
 		case TCEQ:
 					L = Builder.CreateFCmpUEQ(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
+					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
 		case TCNEQ:
 					L = Builder.CreateFCmpUNE(L, R, "cmptmp");
-					return Builder.CreateZExt(L, Type::getDoubleTy(getGlobalContext()));
+					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
 		default: std::cerr << "Invalid binary op met!" << std::endl; return 0;
 	}
 }
