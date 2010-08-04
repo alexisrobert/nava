@@ -3,8 +3,14 @@
 #include "../parser.hpp"
 
 #include <iostream>
+#include <stdio.h>
 
 using namespace llvm;
+
+Value *UnimplementedAST::Codegen() {
+	std::cerr << "ERROR ! Unimplemented AST node met !" << std::endl;
+	return 0;
+}
 
 Value *IntegerExprAST::Codegen() {
 	return ConstantInt::get(Type::getInt32Ty(getGlobalContext()), Val);
@@ -59,9 +65,14 @@ Function *FunctionAST::Codegen() {
 	BasicBlock *BB = BasicBlock::Create(getGlobalContext(), "entry", F);
 	Builder.SetInsertPoint(BB);
 
-	Builder.CreateRet(Body->Codegen());
+	if (Value *RetVal = Body->Codegen()) {
+		Builder.CreateRet(Body->Codegen());
 	
-	verifyFunction(*F);
+		/* Verify the function */
+		verifyFunction(*F);
 
-	return F;
+		return F;
+	}
+
+	return 0;
 }

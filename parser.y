@@ -38,8 +38,7 @@ program : func_stmts;
 func_stmts : func_decl { $1->Codegen()->dump(); };
 		   | func_stmts func_decl { $2->Codegen()->dump(); };
 
-block : TLBRACE TRBRACE { $$ = new UnimplementedAST(); }
-	  | TLBRACE skip_space expr skip_space TRBRACE { $$ = $3; };
+block : TLBRACE skip_space expr skip_space TRBRACE { $$ = $3; };
 
 expr : TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
 	 | func_call { $$ = new UnimplementedAST(); }

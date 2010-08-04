@@ -47,4 +47,6 @@ class BinaryExprAST : public ExprAST {
 };
 
 class UnimplementedAST : public ExprAST {
+	public:
+		llvm::Value* Codegen();
 };
