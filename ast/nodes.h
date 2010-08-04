@@ -32,11 +32,11 @@ class VariableExprAST : public ExprAST {
 
 class FunctionAST {
 	std::string Name;
-	std::vector<std::string> Args;
+	std::vector<std::string> *Args;
 	ExprAST *Body;
 
 	public:
-	FunctionAST(const std::string &name, const std::vector<std::string> &args, ExprAST *body) : Name(name), Args(args), Body(body) {};
+	FunctionAST(const std::string &name, std::vector<std::string> *args, ExprAST *body) : Name(name), Args(args), Body(body) {};
 	llvm::Function* Codegen();
 	void execute();
 };

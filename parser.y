@@ -11,6 +11,7 @@
 %union {
 	ExprAST *expr;
 	FunctionAST *func;
+	std::vector<std::string> *funcdeclargs;
 	std::string *string;
 	int token;
 }
@@ -22,6 +23,7 @@
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
 
 %type <func> func_decl
+%type <funcdeclargs> func_decl_args
 %type <expr> expr block
 %type <token> comparison bin_operator
 
@@ -58,11 +60,11 @@ func_call_args : /*empty*/ {}
 			   | expr skip_space TCOMMA skip_space func_call_args {};
 
 func_decl : TDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
-		  		{ $$ = new FunctionAST((*$3), std::vector<std::string>(), $8); };
+		  		{ $$ = new FunctionAST((*$3), $5, $8); };
 
-func_decl_args : /* empty */ {}
-			| TIDENTIFIER {}
-			| func_decl_args skip_space TCOMMA skip_space TIDENTIFIER {};
+func_decl_args : /* empty */ { $$ = new std::vector<std::string>(); }
+			| TIDENTIFIER { $$ = new std::vector<std::string>(); $$->push_back(*$1); delete $1; }
+			| func_decl_args skip_space TCOMMA skip_space TIDENTIFIER { $$->push_back(*$5); delete $5; };
 
 comparison : TCEQ | TCGEQ | TCGT | TCLEQ | TCLT | TCNEQ;
 

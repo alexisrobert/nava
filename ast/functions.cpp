@@ -5,13 +5,21 @@ using namespace llvm;
 
 Function *FunctionAST::Codegen() {
 	/* Creating function prototype */
-	std::vector<const Type*> Integers(Args.size(), Type::getDoubleTy(getGlobalContext()));
+	std::vector<const Type*> FuncArgs(this->Args->size(), Type::getDoubleTy(getGlobalContext()));
 
-	FunctionType *FT = FunctionType::get(Type::getDoubleTy(getGlobalContext()), Integers, false);
+	FunctionType *FT = FunctionType::get(Type::getDoubleTy(getGlobalContext()), FuncArgs, false);
 
 	Function *F = Function::Create(FT, Function::ExternalLinkage, Name, TheModule);
 
 	if (Body == 0x00) return 0; // body == 0x00 => this is an extern, we just add it in LLVM's symbol table.
+
+	/* Naming arguments (btw, we don't need that for externs) */
+	unsigned Idx = 0;
+	for (Function::arg_iterator AI = F->arg_begin(); Idx != Args->size(); ++AI, ++Idx) {
+		AI->setName((*this->Args)[Idx]);
+
+		NamedValues[(*Args)[Idx]] = AI; // Update symbol table
+	}
 
 	/* Filling function code */
 	BasicBlock *BB = BasicBlock::Create(getGlobalContext(), "entry", F);
@@ -42,7 +50,7 @@ void FunctionAST::execute() {
 		return;
 	}
 
-	if (this->Args.size() != 0) {
+	if (this->Args->size() != 0) {
 		std::cout << "Function with multiple arguments, not executing." << std::endl;
 		return;
 	}
