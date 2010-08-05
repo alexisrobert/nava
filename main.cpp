@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
 	
 	yyparse();
 
+	std::cerr << "; ----- LLVM Bytecode dump -----" << std::endl;
 	TheModule->dump();
 	return 0;
 }

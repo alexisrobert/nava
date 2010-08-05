@@ -1,3 +1,5 @@
+def print(x) {}
+
 def fib(x) {
 	if x < 3 {
 		1
@@ -7,5 +9,5 @@ def fib(x) {
 }
 
 def main() {
-	fib(30)
+	print(fib(20))
 }

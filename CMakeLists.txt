@@ -36,4 +36,4 @@ EXECUTE_PROCESS(
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LLVM_CXXFLAGS} ${LLVM_LDFLAGS} -lLLVM-2.7 -g")
 
-ADD_EXECUTABLE(nava main.cpp lexer.cpp parser.cpp ast/nodes.cpp ast/functions.cpp)
+ADD_EXECUTABLE(nava main.cpp lexer.cpp parser.cpp ast/nodes.cpp ast/functions.cpp stdlib/stdlib.cpp)
