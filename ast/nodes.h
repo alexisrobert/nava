@@ -46,10 +46,12 @@ class CallExprAST : public ExprAST {
 class FunctionAST {
 	std::string Name;
 	std::vector<std::string> *Args;
-	ExprAST *Body;
+	std::vector<ExprAST*> *Body;
 
 	public:
-	FunctionAST(const std::string &name, std::vector<std::string> *args, ExprAST *body) : Name(name), Args(args), Body(body) {};
+	FunctionAST(const std::string &name,
+			std::vector<std::string> *args,
+			std::vector<ExprAST*> *body) : Name(name), Args(args), Body(body) {};
 	llvm::Function* Codegen();
 	void execute();
 };
@@ -72,10 +74,13 @@ class BinaryExprAST : public ExprAST {
 };
 
 class IfExprAST : public ExprAST {
-	ExprAST *Cond, *Then, *Else;
+	ExprAST *Cond;
+	std::vector<ExprAST*> *Then, *Else;
 
 	public:
-	IfExprAST(ExprAST *cond, ExprAST *then, ExprAST *_else) : Cond(cond), Then(then), Else(_else) {};
+	IfExprAST(ExprAST *cond,
+			std::vector<ExprAST*> *then,
+			std::vector<ExprAST*> *_else) : Cond(cond), Then(then), Else(_else) {};
 	llvm::Value* Codegen();
 };
 

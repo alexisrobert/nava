@@ -25,8 +25,16 @@ Function *FunctionAST::Codegen() {
 	BasicBlock *BB = BasicBlock::Create(getGlobalContext(), "entry", F);
 	Builder.SetInsertPoint(BB);
 
-	if (Value *RetVal = Body->Codegen()) {
-		Builder.CreateRet(RetVal);
+	/* Inserting all statements */
+	Value *last_value = 0;
+	for (int i = 0; i < Body->size(); i++) {
+		last_value = (*Body)[i]->Codegen(); // Codegen and insert
+
+		if (last_value == 0) break;
+	}
+
+	if (last_value != 0) {
+		Builder.CreateRet(last_value);
 	
 		/* Verify the function */
 		verifyFunction(*F);

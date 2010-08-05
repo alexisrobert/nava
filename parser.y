@@ -12,6 +12,7 @@
 %union {
 	ExprAST *expr;
 	FunctionAST *func;
+	std::vector<ExprAST*> *stmts;
 	std::vector<std::string> *funcdeclargs;
 	std::vector<ExprAST*> *funcargs;
 	std::string *string;
@@ -27,7 +28,8 @@
 %type <func> func_decl
 %type <funcdeclargs> func_decl_args
 %type <funcargs> func_call_args
-%type <expr> expr block stmt
+%type <expr> expr stmt
+%type <stmts> stmts block
 %type <token> comparison bin_operator
 
 %left TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
@@ -43,16 +45,18 @@ program : func_stmts;
 func_stmts : func_decl { $1->execute(); };
 		   | func_stmts func_decl { $2->execute(); };
 
-block : TLBRACE skip_space stmt skip_space TRBRACE { $$ = $3; }
+block : TLBRACE skip_space stmts skip_space TRBRACE { $$ = $3; }
 	  | TLBRACE skip_space TRBRACE { $$ = 0; }
 
-stmt : expr { $$ = $1 }
-	| TIF skip_space expr skip_space block skip_space TELSE skip_space block
+stmts : stmt { $$ = new std::vector<ExprAST*>(); $$->push_back($1); }
+	  | stmts stmt { $$->push_back($2); };
+
+stmt : expr { $$ = $1 };
+	| TIF TSPACE expr skip_space block skip_space TELSE skip_space block
 	 	{ $$ = new IfExprAST($3, $5, $9); };
 
-
 expr : TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
-	 | TIDENTIFIER skip_space TLPAREN func_call_args TRPAREN { $$ = new CallExprAST((*$1), $4); delete $1; }
+	 | TIDENTIFIER TLPAREN func_call_args TRPAREN { $$ = new CallExprAST((*$1), $3); delete $1; }
 	 | TIDENTIFIER { $$ = new VariableExprAST((*$1)); delete $1; }
 	 | expr skip_space comparison skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
 	 | expr skip_space bin_operator skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }

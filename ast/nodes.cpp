@@ -93,8 +93,12 @@ Value *IfExprAST::Codegen() {
 	Builder.SetInsertPoint(ThenBB);
 
 	// Insert into the "then" part
-	Value *ThenV = Then->Codegen();
-	if (ThenV == 0) return 0;
+	Value *ThenV = 0;	
+	for (int i = 0; i < Then->size(); i++) {
+		ThenV = (*Then)[i]->Codegen();
+
+		if (ThenV == 0) return 0;
+	}
 
 	Builder.CreateBr(MergeBB);
 	ThenBB = Builder.GetInsertBlock(); // Update ThenBB pointer for PHI
@@ -103,8 +107,12 @@ Value *IfExprAST::Codegen() {
 	TheFunction->getBasicBlockList().push_back(ElseBB);
 	Builder.SetInsertPoint(ElseBB);
 
-	Value *ElseV = Else->Codegen();
-	if (ElseV == 0) return 0;
+	Value *ElseV = 0;
+	for (int i = 0; i < Else->size(); i++) {
+		ElseV = (*Else)[i]->Codegen();
+
+		if (ElseV == 0) return 0;
+	}
 
 	Builder.CreateBr(MergeBB);
 	ElseBB = Builder.GetInsertBlock(); // Update ElseBB ptr for PHI
