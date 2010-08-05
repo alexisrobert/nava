@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-// This is a VERY basic standard library for Nava
+/* This is a VERY basic standard library for Nava */
 
 extern "C" {
 	double print(double data) {
