@@ -16,7 +16,6 @@ llvm::FunctionPassManager *TheFPM;
 std::map<std::string, llvm::Value*> NamedValues;
 llvm::IRBuilder<> Builder(llvm::getGlobalContext());
 
-
 int main(int argc, char **argv) {
 	TheModule = new llvm::Module("nava", llvm::getGlobalContext());
 
@@ -29,6 +28,7 @@ int main(int argc, char **argv) {
 	TheFPM->add(new llvm::TargetData(*TheExecutionEngine->getTargetData()));
 	TheFPM->add(llvm::createInstructionCombiningPass());
 	TheFPM->add(llvm::createReassociatePass());
+	TheFPM->add(llvm::createTailCallEliminationPass());
 	TheFPM->add(llvm::createGVNPass());
 	TheFPM->add(llvm::createCFGSimplificationPass());
 	TheFPM->doInitialization();

@@ -42,8 +42,8 @@
 
 program : func_stmts;
 
-func_stmts : func_decl { $1->execute(); };
-		   | func_stmts func_decl { $2->execute(); };
+func_stmts : func_decl { $1->Codegen(); };
+		   | func_stmts func_decl { $2->Codegen(); };
 
 block : TLBRACE skip_space stmts skip_space TRBRACE { $$ = $3; }
 	  | TLBRACE skip_space TRBRACE { $$ = 0; }

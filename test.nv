@@ -1,15 +1,27 @@
 def print(x) {}
 def read() {}
 
-def fib(x) {
-	if x < 2 {
-		1
+def fibtail(n, res0, res1) {
+	if n == 0 {
+		res1
 	} else {
-		fib(x-1)+fib(x-2)
+		fibtail(n-1, res1, res0+res1)
 	}
 }
 
+def fib(n) {
+	if n < 2 {
+		1
+	} else {
+		fib(n-1)+fib(n-2)
+	}
+}
+
+def launch(n) {
+	print(fibtail(n, 0, 1))
+	print(fib(n))
+}
+
 def main() {
-	print(fib(10))
-	print(fib(read()))
+	launch(40)
 }
