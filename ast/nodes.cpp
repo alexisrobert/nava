@@ -24,6 +24,7 @@ Value *BinaryExprAST::Codegen() {
 		case TPLUS: return Builder.CreateAdd(L,R,"addtmp");
 		case TMINUS: return Builder.CreateSub(L,R,"subtmp");
 		case TMULT: return Builder.CreateMul(L,R,"multmp");
+		case TMOD: return Builder.CreateFRem(L,R,"modtmp");
 
 		/* Comparaison operators */
 		case TCLT:

@@ -23,5 +23,5 @@ def launch(n) {
 }
 
 def main() {
-	launch(40)
+	print(fib(40))
 }

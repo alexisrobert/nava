@@ -43,6 +43,7 @@ extern int yylineno;
 "-"			return SAVE_TOKEN(TMINUS);
 "*"			return SAVE_TOKEN(TMULT);
 "/"			return SAVE_TOKEN(TDIV);
+"%"			return SAVE_TOKEN(TMOD);
 
 .			printf("Lexical error : unknown token '%s'.\n", yytext); yyterminate();
 

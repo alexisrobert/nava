@@ -22,7 +22,7 @@
 %token <string> TIDENTIFIER TINTEGER
 %token <token> TDEF TIF TELSE TEQ
 %token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
-%token <token> TPLUS TMINUS TMULT TDIV
+%token <token> TPLUS TMINUS TMULT TDIV TMOD
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
 
 %type <func> func_decl
@@ -34,7 +34,7 @@
 
 %left TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %left TPLUS TMINUS
-%left TMULT TDIV
+%left TMULT TDIV TMOD
 
 %start program
 
@@ -78,6 +78,6 @@ func_decl_args : /* empty */ { $$ = new std::vector<std::string>(); }
 
 comparison : TCEQ | TCGEQ | TCGT | TCLEQ | TCLT | TCNEQ;
 
-bin_operator : TPLUS | TMINUS | TMULT | TDIV;
+bin_operator : TPLUS | TMINUS | TMULT | TDIV | TMOD;
 
 %%
