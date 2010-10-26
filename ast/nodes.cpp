@@ -21,9 +21,9 @@ Value *BinaryExprAST::Codegen() {
 	if (L == 0 || R == 0) return 0;
 
 	switch (Op) {
-		case TPLUS: return Builder.CreateAdd(L,R,"addtmp");
-		case TMINUS: return Builder.CreateSub(L,R,"subtmp");
-		case TMULT: return Builder.CreateMul(L,R,"multmp");
+		case TPLUS: return Builder.CreateFAdd(L,R,"addtmp");
+		case TMINUS: return Builder.CreateFSub(L,R,"subtmp");
+		case TMULT: return Builder.CreateFMul(L,R,"multmp");
 		case TMOD: return Builder.CreateFRem(L,R,"modtmp");
 
 		/* Comparaison operators */
