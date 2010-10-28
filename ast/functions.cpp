@@ -3,7 +3,9 @@
 
 using namespace llvm;
 
-Function *FunctionAST::Codegen() {
+Function *FunctionAST::Codegen(VariableTree *memctx) {
+	VariableTree *newmemctx = new VariableTree(memctx); // New function's memory context
+
 	/* Creating function prototype */
 	std::vector<const Type*> FuncArgs(this->Args->size(), Type::getDoubleTy(getGlobalContext()));
 
@@ -18,7 +20,7 @@ Function *FunctionAST::Codegen() {
 	for (Function::arg_iterator AI = F->arg_begin(); Idx != Args->size(); ++AI, ++Idx) {
 		AI->setName((*this->Args)[Idx]);
 
-		NamedValues[(*Args)[Idx]] = AI; // Update symbol table
+		newmemctx->set((*Args)[Idx], AI); // Update symbol table
 	}
 
 	/* Filling function code */
@@ -27,11 +29,14 @@ Function *FunctionAST::Codegen() {
 
 	/* Inserting all statements */
 	Value *last_value = 0;
+	
 	for (int i = 0; i < Body->size(); i++) {
-		last_value = (*Body)[i]->Codegen(); // Codegen and insert
+		last_value = (*Body)[i]->Codegen(newmemctx); // Codegen and insert
 
 		if (last_value == 0) break;
 	}
+
+	delete newmemctx;
 
 	if (last_value != 0) {
 		Builder.CreateRet(last_value);
@@ -51,7 +56,7 @@ Function *FunctionAST::Codegen() {
 }
 
 void FunctionAST::execute() {
-	Function *LF = this->Codegen();
+	Function *LF = this->Codegen(new VariableTree());
 
 	if (LF == 0) {
 		return;

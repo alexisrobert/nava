@@ -40,8 +40,9 @@ int main(int argc, char **argv) {
 	yyparse();
 
 	/* Now, the AST is in rootnode, we just need to generate LLVM bytecode */
+	VariableTree *memroot = new VariableTree();
 	for (int i = 0; i < rootnode->children->size(); i++) {
-		(*rootnode->children)[i]->Codegen();
+		(*rootnode->children)[i]->Codegen(memroot);
 	}
 
 	std::cerr << "; ----- LLVM Bytecode dump -----" << std::endl;

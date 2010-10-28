@@ -2,6 +2,8 @@
 #include <vector>
 #include <iostream>
 
+#include "../memory/memory.h"
+
 #include <llvm/DerivedTypes.h>
 #include <llvm/LLVMContext.h>
 #include <llvm/Module.h>
@@ -16,13 +18,13 @@ static llvm::Value *ErrorV(const char *Str) {
 
 class ExprAST {
 	public:
-	virtual llvm::Value* Codegen() = 0;
+	virtual llvm::Value* Codegen(VariableTree *memctx) = 0;
 };
 
 class StatementsAST : public ExprAST {
 	public:
 	StatementsAST() { this->statements = new std::vector<ExprAST*>(); };
-	llvm::BasicBlock* Codegen();
+	llvm::BasicBlock* Codegen(VariableTree *memctx);
 	std::vector<ExprAST*> *statements;
 };
 
@@ -31,7 +33,7 @@ class VariableExprAST : public ExprAST {
 
 	public:
 	VariableExprAST(const std::string &name) : Name(name) {};
-	llvm::Value* Codegen();
+	llvm::Value* Codegen(VariableTree *memctx);
 };
 
 class CallExprAST : public ExprAST {
@@ -40,7 +42,7 @@ class CallExprAST : public ExprAST {
 
 	public:
 	CallExprAST(const std::string &name, std::vector<ExprAST*> *args) : Name(name), Args(args) {};
-	llvm::Value* Codegen();
+	llvm::Value* Codegen(VariableTree *memctx);
 };
 
 class FunctionAST {
@@ -52,7 +54,7 @@ class FunctionAST {
 	FunctionAST(const std::string &name,
 			std::vector<std::string> *args,
 			std::vector<ExprAST*> *body) : Name(name), Args(args), Body(body) {};
-	llvm::Function* Codegen();
+	llvm::Function* Codegen(VariableTree *memctx);
 	void execute();
 };
 
@@ -67,7 +69,7 @@ class IntegerExprAST : public ExprAST {
 
 	public:
 	IntegerExprAST(int val) : Val(val) {};
-	llvm::Value* Codegen();
+	llvm::Value* Codegen(VariableTree *memctx);
 };
 
 class BinaryExprAST : public ExprAST {
@@ -76,7 +78,7 @@ class BinaryExprAST : public ExprAST {
 
 	public:
 	BinaryExprAST(int op, ExprAST *lhs, ExprAST *rhs) : Op(op), LHS(lhs), RHS(rhs) {};
-	llvm::Value* Codegen();
+	llvm::Value* Codegen(VariableTree *memctx);
 };
 
 class IfExprAST : public ExprAST {
@@ -87,10 +89,10 @@ class IfExprAST : public ExprAST {
 	IfExprAST(ExprAST *cond,
 			std::vector<ExprAST*> *then,
 			std::vector<ExprAST*> *_else) : Cond(cond), Then(then), Else(_else) {};
-	llvm::Value* Codegen();
+	llvm::Value* Codegen(VariableTree *memctx);
 };
 
 class UnimplementedAST : public ExprAST {
 	public:
-	llvm::Value* Codegen();
+	llvm::Value* Codegen(VariableTree *memctx);
 };

@@ -7,17 +7,17 @@
 
 using namespace llvm;
 
-Value *UnimplementedAST::Codegen() {
+Value *UnimplementedAST::Codegen (VariableTree *memctx) {
 	return ErrorV("Unimplemented AST node met.");
 }
 
-Value *IntegerExprAST::Codegen() {
+Value *IntegerExprAST::Codegen (VariableTree *memctx) {
 	return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), (double)Val);
 }
 
-Value *BinaryExprAST::Codegen() {
-	Value *L = LHS->Codegen();
-	Value *R = RHS->Codegen();
+Value *BinaryExprAST::Codegen (VariableTree *memctx) {
+	Value *L = LHS->Codegen(memctx);
+	Value *R = RHS->Codegen(memctx);
 	if (L == 0 || R == 0) return 0;
 
 	switch (Op) {
@@ -54,12 +54,12 @@ Value *BinaryExprAST::Codegen() {
 }
 
 // TODO : Remove the NamedValue symbol table for a recursive stack based approach
-Value *VariableExprAST::Codegen() {
-	Value *V = NamedValues[Name];
+Value *VariableExprAST::Codegen (VariableTree *memctx) {
+	Value *V = memctx->get(Name);
 	return V ? V : ErrorV((std::string("Variable '")+Name+"' not found in symbol table.").c_str()); 
 }
 
-Value *CallExprAST::Codegen() {
+Value *CallExprAST::Codegen (VariableTree *memctx) {
 	Function *CalleeF = TheModule->getFunction(Name);
 	if (CalleeF == 0)
 		return ErrorV((std::string("Unknown function : ")+Name).c_str());
@@ -68,17 +68,19 @@ Value *CallExprAST::Codegen() {
 		return ErrorV((std::string("Wrong argument numbers for '")+Name+"'").c_str());
 
 	std::vector<Value*> ArgsV;
+
+	// Expanding argument values
 	for (unsigned int i = 0, e = Args->size(); i != e; ++i) {
-		ArgsV.push_back((*Args)[i]->Codegen());
+		ArgsV.push_back((*Args)[i]->Codegen(memctx));
 		if (ArgsV.back() == 0) return 0;
 	}
 
 	return Builder.CreateCall(CalleeF, ArgsV.begin(), ArgsV.end(), "calltmp");
 }
 
-Value *IfExprAST::Codegen() {
+Value *IfExprAST::Codegen (VariableTree *memctx) {
 	// Create the comparaison part
-	Value *CondV = Cond->Codegen();
+	Value *CondV = Cond->Codegen(memctx);
 	if (CondV == 0) return 0;
 
 	CondV = Builder.CreateFCmpONE(CondV, ConstantFP::get(getGlobalContext(), APFloat(0.0)), "ifcond");
@@ -94,9 +96,11 @@ Value *IfExprAST::Codegen() {
 	Builder.SetInsertPoint(ThenBB);
 
 	// Insert into the "then" part
-	Value *ThenV = 0;	
+	Value *ThenV = 0;
+	VariableTree *ThenMemctx = new VariableTree(memctx);
+
 	for (int i = 0; i < Then->size(); i++) {
-		ThenV = (*Then)[i]->Codegen();
+		ThenV = (*Then)[i]->Codegen(ThenMemctx);
 
 		if (ThenV == 0) return 0;
 	}
@@ -104,19 +108,24 @@ Value *IfExprAST::Codegen() {
 	Builder.CreateBr(MergeBB);
 	ThenBB = Builder.GetInsertBlock(); // Update ThenBB pointer for PHI
 
+	delete ThenMemctx;
+
 	// Insert into the "else" part
 	TheFunction->getBasicBlockList().push_back(ElseBB);
 	Builder.SetInsertPoint(ElseBB);
 
 	Value *ElseV = 0;
+	VariableTree *ElseMemctx = new VariableTree(memctx);
 	for (int i = 0; i < Else->size(); i++) {
-		ElseV = (*Else)[i]->Codegen();
+		ElseV = (*Else)[i]->Codegen(ElseMemctx);
 
 		if (ElseV == 0) return 0;
 	}
 
 	Builder.CreateBr(MergeBB);
 	ElseBB = Builder.GetInsertBlock(); // Update ElseBB ptr for PHI
+
+	delete ElseMemctx;
 
 	// Create the merge block and PHI stuff
 	TheFunction->getBasicBlockList().push_back(MergeBB);
