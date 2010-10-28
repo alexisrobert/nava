@@ -57,7 +57,9 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 Value *VariableExprAST::Codegen (VariableTree *memctx) {
 	Value *V = memctx->get(Name);
 
-	return V ? V : ErrorV((std::string("Variable '")+Name+"' not found in symbol table.").c_str()); 
+	if (V == 0) return ErrorV((std::string("Variable '")+Name+"' not found in symbol table.").c_str());
+
+	return Builder.CreateLoad(V, Name.c_str());
 }
 
 Value *CallExprAST::Codegen (VariableTree *memctx) {
@@ -155,13 +157,9 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 	Builder.CreateBr(LoopBB);
 	Builder.SetInsertPoint(LoopBB); // We now insert code in the loop
 
-	// Add a PHI node for the initial value (if we come from start => StartVal, else use the updated value)
-	PHINode *Variable = Builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), Varname->c_str());
-
-	Variable->addIncoming(StartVal, PreheaderBB);
-
 	// Update the memory context to set the variable equal to the PHINode
-	newmemctx->set((*Varname), Variable);
+	AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(TheFunction, (*Varname));
+	newmemctx->set((*Varname), Alloca);
 
 	Value *lastval = Constant::getNullValue(Type::getDoubleTy(getGlobalContext()));
 
@@ -173,7 +171,8 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 	Value *StepVar = Step->Codegen(newmemctx);
 	if (StepVar == 0) return 0;
 
-	Value *NextVar = Builder.CreateFAdd(Variable, StepVar, "nextvar");
+	Value *NextVar = Builder.CreateFAdd(Builder.CreateLoad(Alloca), StepVar, "nextvar");
+	Builder.CreateStore(NextVar, Alloca);
 
 	// Compute the end condition
 	Value *EndCond = Stop->Codegen(newmemctx);
@@ -186,9 +185,6 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 	BasicBlock *AfterBB = BasicBlock::Create(getGlobalContext(), "forend", TheFunction);
 
 	Builder.CreateCondBr(EndCond, LoopBB, AfterBB);
-
-	// Update the PHI node (<=> update the variable after a loop)
-	Variable->addIncoming(NextVar, LoopEndBB);
 
 	// Set insert point for new instructions when the loop is finished
 	Builder.SetInsertPoint(AfterBB);

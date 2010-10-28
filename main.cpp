@@ -30,6 +30,7 @@ int main(int argc, char **argv) {
 	/* Initialize the bytecode optimizer */
 	TheFPM = new llvm::FunctionPassManager(TheModule);
 	TheFPM->add(new llvm::TargetData(*TheExecutionEngine->getTargetData()));
+	TheFPM->add(llvm::createPromoteMemoryToRegisterPass());
 	TheFPM->add(llvm::createInstructionCombiningPass());
 	TheFPM->add(llvm::createReassociatePass());
 	TheFPM->add(llvm::createTailCallEliminationPass());

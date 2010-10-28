@@ -1,15 +1,18 @@
 #include <map>
-#include <llvm/Value.h>
+#include <llvm/Instructions.h>
+#include <llvm/Function.h>
 
 class VariableTree {
 	public:
 		VariableTree(VariableTree* parent = 0);
 		~VariableTree();
 
-		void set(std::string name, llvm::Value* value);
-		llvm::Value* get(std::string &name);
+		void set(std::string name, llvm::AllocaInst* value);
+		llvm::AllocaInst* get(std::string &name);
+
+		static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName);
 	
 	protected:
-		std::map<std::string, llvm::Value*> *values;
+		std::map<std::string, llvm::AllocaInst*> *values;
 		VariableTree* parent;
 };

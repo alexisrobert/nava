@@ -15,17 +15,24 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 
 	if (Body == 0x00) return 0; // body == 0x00 => this is an extern, we just add it in LLVM's symbol table.
 
+	/* Creating the basic block which will hold the function */
+	BasicBlock *BB = BasicBlock::Create(getGlobalContext(), "entry", F);
+	Builder.SetInsertPoint(BB);
+
 	/* Naming arguments (btw, we don't need that for externs) */
 	unsigned Idx = 0;
 	for (Function::arg_iterator AI = F->arg_begin(); Idx != Args->size(); ++AI, ++Idx) {
 		AI->setName((*this->Args)[Idx]);
 
-		newmemctx->set((*Args)[Idx], AI); // Update symbol table
-	}
+		// Create the alloca for this variable
+		AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(F, (*this->Args)[Idx]);
 
-	/* Filling function code */
-	BasicBlock *BB = BasicBlock::Create(getGlobalContext(), "entry", F);
-	Builder.SetInsertPoint(BB);
+		// Store the initial value in the alloca
+		Builder.CreateStore(AI, Alloca);
+
+		// And the update the symbol table
+		newmemctx->set((*this->Args)[Idx], Alloca);
+	}
 
 	/* Inserting all statements */
 	Value *last_value = 0;
