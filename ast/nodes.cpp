@@ -162,8 +162,11 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 
 	// Update the memory context to set the variable equal to the PHINode
 	newmemctx->set((*Varname), Variable);
+
+	Value *lastval = Constant::getNullValue(Type::getDoubleTy(getGlobalContext()));
+
 	for (int i = 0; i < Body->size(); i++) {
-		if ((*Body)[i]->Codegen(newmemctx) == 0) return 0;
+		if ((lastval = (*Body)[i]->Codegen(newmemctx)) == 0) return 0;
 	}
 
 	// Compute step variable
@@ -190,5 +193,5 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 	// Set insert point for new instructions when the loop is finished
 	Builder.SetInsertPoint(AfterBB);
 
-	return Constant::getNullValue(Type::getDoubleTy(getGlobalContext()));
+	return lastval;
 }
