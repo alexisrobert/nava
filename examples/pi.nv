@@ -1,0 +1,23 @@
+def print(x) {}
+def sin(x) {}
+
+def f(x) {
+	sin(x)
+}
+
+def dicho(a,b,n) {
+	c:=((a+b)/2)
+	if n>0 {
+		if (f(a)*f(c))>0 {
+			dicho(c,b,n-1)
+		} else {
+			dicho(a,c,n-1)
+		}
+	} else {
+		c
+	}
+}
+
+def main() {
+	print(dicho(3,4,200))
+}

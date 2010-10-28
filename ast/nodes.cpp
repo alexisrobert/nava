@@ -42,7 +42,6 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 		return R;
 	}
 
-
 	Value *L = LHS->Codegen(memctx);
 	Value *R = RHS->Codegen(memctx);
 	if (L == 0 || R == 0) return 0;
@@ -52,6 +51,7 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 		case TMINUS: return Builder.CreateFSub(L,R,"subtmp");
 		case TMULT: return Builder.CreateFMul(L,R,"multmp");
 		case TMOD: return Builder.CreateFRem(L,R,"modtmp");
+		case TDIV: return Builder.CreateFDiv(L,R,"divtmp");
 
 		/* Comparaison operators */
 		case TCLT:
