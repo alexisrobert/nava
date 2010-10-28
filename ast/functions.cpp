@@ -9,6 +9,11 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 	/* Creating function prototype */
 	std::vector<const Type*> FuncArgs(this->Args->size(), Type::getDoubleTy(getGlobalContext()));
 
+	/* Add JNI variables for environment and parent if native. */
+	if (this->native == true) {
+		FuncArgs.insert(FuncArgs.begin(), 2, PointerType::get(OpaqueType::get(getGlobalContext()),0));
+	}
+
 	FunctionType *FT = FunctionType::get(Type::getDoubleTy(getGlobalContext()), FuncArgs, false);
 
 	Function *F = Function::Create(FT, Function::ExternalLinkage, Name, TheModule);
@@ -21,7 +26,17 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 
 	/* Naming arguments (btw, we don't need that for externs) */
 	unsigned Idx = 0;
-	for (Function::arg_iterator AI = F->arg_begin(); Idx != Args->size(); ++AI, ++Idx) {
+	Function::arg_iterator AI = F->arg_begin();
+
+	/* Sets variable names for environment and parent if native. */
+	if (this->native == true) {
+		AI->setName("env");
+		AI++;
+		AI->setName("parent");
+		AI++;
+	}
+
+	for (; Idx != Args->size(); ++AI, ++Idx) {
 		AI->setName((*this->Args)[Idx]);
 
 		// Create the alloca for this variable

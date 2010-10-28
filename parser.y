@@ -23,7 +23,7 @@
 }
 
 %token <string> TIDENTIFIER TINTEGER
-%token <token> TDEF TIF TELSE TEQ TFOR
+%token <token> TJDEF TDEF TIF TELSE TEQ TFOR
 %token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %token <token> TPLUS TMINUS TMULT TDIV TMOD
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
@@ -76,7 +76,9 @@ func_call_args : /*empty*/ { $$ = new std::vector<ExprAST*>(); }
 			   | func_call_args skip_space TCOMMA skip_space expr { $$->push_back($5); };
 
 func_decl : TDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
-		  		{ $$ = new FunctionAST((*$3), $5, $8); };
+		  		{ $$ = new FunctionAST((*$3), $5, $8); }
+			| TJDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
+				{ $$ = new FunctionAST((*$3), $5, $8); $$->setNative(true); }
 
 func_decl_args : /* empty */ { $$ = new std::vector<std::string>(); }
 			| TIDENTIFIER { $$ = new std::vector<std::string>(); $$->push_back(*$1); delete $1; }

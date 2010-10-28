@@ -18,6 +18,7 @@ extern int yylineno;
 ","			return SAVE_TOKEN(TCOMMA);
 
 "def"		return SAVE_TOKEN(TDEF);
+"jdef"		return SAVE_TOKEN(TJDEF);
 
 "if"		return SAVE_TOKEN(TIF);
 "for"		return SAVE_TOKEN(TFOR);
