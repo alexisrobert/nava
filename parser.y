@@ -6,6 +6,9 @@
 
 	extern int yylex();
 	extern int yyget_lineno();
+
+	extern RootAST *rootnode;
+
 	void yyerror(const char *s) { printf("line %d: %s\n", yyget_lineno(), s); }
 %}
 
@@ -42,8 +45,8 @@
 
 program : func_stmts;
 
-func_stmts : func_decl { $1->Codegen(); };
-		   | func_stmts func_decl { $2->Codegen(); };
+func_stmts : func_decl { rootnode->children->push_back($1); };
+		   | func_stmts func_decl { rootnode->children->push_back($2); };
 
 block : TLBRACE skip_space stmts skip_space TRBRACE { $$ = $3; }
 	  | TLBRACE skip_space TRBRACE { $$ = 0; }

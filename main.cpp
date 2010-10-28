@@ -9,12 +9,16 @@
 #include <llvm/Target/TargetSelect.h>
 #include <llvm/Support/IRBuilder.h>
 
+#include "ast/nodes.h"
+
 extern int yyparse();
 llvm::Module *TheModule;
 llvm::ExecutionEngine *TheExecutionEngine;
 llvm::FunctionPassManager *TheFPM;
 std::map<std::string, llvm::Value*> NamedValues;
 llvm::IRBuilder<> Builder(llvm::getGlobalContext());
+
+RootAST *rootnode = new RootAST();
 
 int main(int argc, char **argv) {
 	TheModule = new llvm::Module("nava", llvm::getGlobalContext());
@@ -34,6 +38,11 @@ int main(int argc, char **argv) {
 	TheFPM->doInitialization();
 	
 	yyparse();
+
+	/* Now, the AST is in rootnode, we just need to generate LLVM bytecode */
+	for (int i = 0; i < rootnode->children->size(); i++) {
+		(*rootnode->children)[i]->Codegen();
+	}
 
 	std::cerr << "; ----- LLVM Bytecode dump -----" << std::endl;
 	TheModule->dump();

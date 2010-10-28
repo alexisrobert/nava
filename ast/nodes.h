@@ -56,6 +56,12 @@ class FunctionAST {
 	void execute();
 };
 
+class RootAST {
+	public:
+	RootAST() { this->children = new std::vector<FunctionAST*>(); };
+	std::vector<FunctionAST*> *children;
+};
+
 class IntegerExprAST : public ExprAST {
 	int Val;
 
