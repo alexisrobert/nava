@@ -32,6 +32,7 @@ extern int yylineno;
 "}"			return SAVE_TOKEN(TRBRACE);
 
 "="			return SAVE_TOKEN(TEQ);
+":="		return SAVE_TOKEN(TVARDEF);
 
 "!="		return SAVE_TOKEN(TCNEQ);
 "=="		return SAVE_TOKEN(TCEQ);

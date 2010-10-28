@@ -16,19 +16,29 @@ Value *IntegerExprAST::Codegen (VariableTree *memctx) {
 }
 
 Value *BinaryExprAST::Codegen (VariableTree *memctx) {
-	if (Op == TEQ) { // Special case : assignation operator
-		VariableExprAST *LHSE = (VariableExprAST*)LHS;
+	if (Op == TEQ || Op == TVARDEF) { // Special case : assignation/variable definition operators
+		VariableExprAST *LHSE = (VariableExprAST*)LHS; // TODO: Verify the type before casting!
 
 		// Fetching the value
 		Value *R = RHS->Codegen(memctx);
 		if (R == 0) return 0;
 
-		// Fetching the alloca
-		AllocaInst *L = memctx->get(LHSE->getName());
-		if (L == 0) return ErrorV("Variable not found.");
+		AllocaInst *L;
 
-		// And ... store !
+		if (Op == TEQ) {
+			// If it's assignation, fetchs the alloca
+			L = memctx->get(LHSE->getName());
+			if (L == 0) return ErrorV("Variable not found.");
+		} else {
+			// Else, create the alloca
+			L = Builder.CreateAlloca(llvm::Type::getDoubleTy(llvm::getGlobalContext()),
+							0, LHSE->getName().c_str());
+			memctx->set(LHSE->getName(), L);
+		}
+
+		// Store the content
 		Builder.CreateStore(R, L);
+
 		return R;
 	}
 

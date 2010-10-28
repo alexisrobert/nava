@@ -38,7 +38,7 @@
 %left TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %left TPLUS TMINUS
 %left TMULT TDIV TMOD
-%left TEQ
+%left TEQ TVARDEF
 
 %start program
 
@@ -84,6 +84,6 @@ func_decl_args : /* empty */ { $$ = new std::vector<std::string>(); }
 
 comparison : TCEQ | TCGEQ | TCGT | TCLEQ | TCLT | TCNEQ;
 
-bin_operator : TEQ | TPLUS | TMINUS | TMULT | TDIV | TMOD;
+bin_operator : TVARDEF | TEQ | TPLUS | TMINUS | TMULT | TDIV | TMOD;
 
 %%
