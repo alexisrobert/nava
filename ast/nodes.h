@@ -33,6 +33,7 @@ class VariableExprAST : public ExprAST {
 
 	public:
 	VariableExprAST(const std::string &name) : Name(name) {};
+	std::string& getName();
 	llvm::Value* Codegen(VariableTree *memctx);
 };
 

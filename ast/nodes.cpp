@@ -16,6 +16,23 @@ Value *IntegerExprAST::Codegen (VariableTree *memctx) {
 }
 
 Value *BinaryExprAST::Codegen (VariableTree *memctx) {
+	if (Op == TEQ) { // Special case : assignation operator
+		VariableExprAST *LHSE = (VariableExprAST*)LHS;
+
+		// Fetching the value
+		Value *R = RHS->Codegen(memctx);
+		if (R == 0) return 0;
+
+		// Fetching the alloca
+		AllocaInst *L = memctx->get(LHSE->getName());
+		if (L == 0) return ErrorV("Variable not found.");
+
+		// And ... store !
+		Builder.CreateStore(R, L);
+		return R;
+	}
+
+
 	Value *L = LHS->Codegen(memctx);
 	Value *R = RHS->Codegen(memctx);
 	if (L == 0 || R == 0) return 0;
@@ -49,17 +66,21 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 		case TCNEQ:
 					L = Builder.CreateFCmpUNE(L, R, "cmptmp");
 					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
+
 		default: ErrorV("Unknown binary op met!");
 	}
 }
 
-// TODO : Remove the NamedValue symbol table for a recursive stack based approach
 Value *VariableExprAST::Codegen (VariableTree *memctx) {
 	Value *V = memctx->get(Name);
 
 	if (V == 0) return ErrorV((std::string("Variable '")+Name+"' not found in symbol table.").c_str());
 
 	return Builder.CreateLoad(V, Name.c_str());
+}
+
+std::string& VariableExprAST::getName() {
+	return this->Name;
 }
 
 Value *CallExprAST::Codegen (VariableTree *memctx) {
