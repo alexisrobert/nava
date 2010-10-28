@@ -192,9 +192,6 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 	Value *StepVar = Step->Codegen(newmemctx);
 	if (StepVar == 0) return 0;
 
-	Value *NextVar = Builder.CreateFAdd(Builder.CreateLoad(Alloca), StepVar, "nextvar");
-	Builder.CreateStore(NextVar, Alloca);
-
 	// Compute the end condition
 	Value *EndCond = Stop->Codegen(newmemctx);
 	if (EndCond == 0) return 0;
