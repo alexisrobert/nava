@@ -193,5 +193,7 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 	// Set insert point for new instructions when the loop is finished
 	Builder.SetInsertPoint(AfterBB);
 
+	delete newmemctx;
+
 	return lastval;
 }
