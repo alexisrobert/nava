@@ -1,5 +1,4 @@
 def print(x) {}
-def read() {}
 
 def fibtail(n, res0, res1) {
 	if n == 0 {
@@ -15,11 +14,6 @@ def fib(n) {
 	} else {
 		fib(n-1)+fib(n-2)
 	}
-}
-
-def launch(n) {
-	print(fibtail(n, 0, 1))
-	print(fib(n))
 }
 
 def main() {
