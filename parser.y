@@ -23,7 +23,7 @@
 }
 
 %token <string> TIDENTIFIER TINTEGER
-%token <token> TDEF TIF TELSE TEQ
+%token <token> TDEF TIF TELSE TEQ TFOR
 %token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %token <token> TPLUS TMINUS TMULT TDIV TMOD
 %token <token> TLPAREN TRPAREN TLBRACE TRBRACE TSPACE TCOMMA
@@ -56,7 +56,9 @@ stmts : stmt { $$ = new std::vector<ExprAST*>(); $$->push_back($1); }
 
 stmt : expr { $$ = $1 };
 	| TIF TSPACE expr skip_space block skip_space TELSE skip_space block
-	 	{ $$ = new IfExprAST($3, $5, $9); };
+	 	{ $$ = new IfExprAST($3, $5, $9); }
+	| TFOR TSPACE TIDENTIFIER TSPACE TEQ TSPACE expr TCOMMA TSPACE expr TCOMMA TSPACE expr skip_space block
+		{ $$ = new ForExprAST($3, $7, $10, $13, $15); };
 
 expr : TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
 	 | TIDENTIFIER TLPAREN func_call_args TRPAREN { $$ = new CallExprAST((*$1), $3); delete $1; }

@@ -19,7 +19,7 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 	Value *L = LHS->Codegen(memctx);
 	Value *R = RHS->Codegen(memctx);
 	if (L == 0 || R == 0) return 0;
-
+	
 	switch (Op) {
 		case TPLUS: return Builder.CreateFAdd(L,R,"addtmp");
 		case TMINUS: return Builder.CreateFSub(L,R,"subtmp");
@@ -56,6 +56,7 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 // TODO : Remove the NamedValue symbol table for a recursive stack based approach
 Value *VariableExprAST::Codegen (VariableTree *memctx) {
 	Value *V = memctx->get(Name);
+
 	return V ? V : ErrorV((std::string("Variable '")+Name+"' not found in symbol table.").c_str()); 
 }
 
@@ -136,4 +137,58 @@ Value *IfExprAST::Codegen (VariableTree *memctx) {
 	PN->addIncoming(ElseV, ElseBB);
 
 	return PN;
+}
+
+Value *ForExprAST::Codegen(VariableTree *memctx) {
+	VariableTree *newmemctx = new VariableTree(memctx);
+
+	// Get start value
+	Value *StartVal = Start->Codegen(memctx);
+	if (StartVal == 0) return 0;
+
+	// Create blocks
+	Function *TheFunction = Builder.GetInsertBlock()->getParent(); // Returns the current function
+	BasicBlock *PreheaderBB = Builder.GetInsertBlock(); // Returns the current insert block
+
+	BasicBlock *LoopBB = BasicBlock::Create(getGlobalContext(), "for", TheFunction);
+
+	Builder.CreateBr(LoopBB);
+	Builder.SetInsertPoint(LoopBB); // We now insert code in the loop
+
+	// Add a PHI node for the initial value (if we come from start => StartVal, else use the updated value)
+	PHINode *Variable = Builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), Varname->c_str());
+
+	Variable->addIncoming(StartVal, PreheaderBB);
+
+	// Update the memory context to set the variable equal to the PHINode
+	newmemctx->set((*Varname), Variable);
+	for (int i = 0; i < Body->size(); i++) {
+		if ((*Body)[i]->Codegen(newmemctx) == 0) return 0;
+	}
+
+	// Compute step variable
+	Value *StepVar = Step->Codegen(newmemctx);
+	if (StepVar == 0) return 0;
+
+	Value *NextVar = Builder.CreateFAdd(Variable, StepVar, "nextvar");
+
+	// Compute the end condition
+	Value *EndCond = Stop->Codegen(newmemctx);
+	if (EndCond == 0) return 0;
+
+	EndCond = Builder.CreateFCmpONE(EndCond, ConstantFP::get(getGlobalContext(), APFloat(0.0)), "loopcond");
+
+	// Prepare the "after loop" block, where we'll go if the loop stops
+	BasicBlock *LoopEndBB = Builder.GetInsertBlock();
+	BasicBlock *AfterBB = BasicBlock::Create(getGlobalContext(), "forend", TheFunction);
+
+	Builder.CreateCondBr(EndCond, LoopBB, AfterBB);
+
+	// Update the PHI node (<=> update the variable after a loop)
+	Variable->addIncoming(NextVar, LoopEndBB);
+
+	// Set insert point for new instructions when the loop is finished
+	Builder.SetInsertPoint(AfterBB);
+
+	return Constant::getNullValue(Type::getDoubleTy(getGlobalContext()));
 }

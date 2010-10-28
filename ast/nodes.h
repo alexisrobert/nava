@@ -92,6 +92,18 @@ class IfExprAST : public ExprAST {
 	llvm::Value* Codegen(VariableTree *memctx);
 };
 
+class ForExprAST : public ExprAST {
+	ExprAST *Start, *Stop, *Step;
+	std::vector<ExprAST*> *Body;
+	std::string *Varname;
+
+	public:
+	ForExprAST(std::string *varname, ExprAST *start, ExprAST *stop, ExprAST *step, std::vector<ExprAST*> *body)
+				: Start(start), Stop(stop), Step(step), Body(body), Varname(varname) {};
+
+	llvm::Value* Codegen(VariableTree *memctx);
+};
+
 class UnimplementedAST : public ExprAST {
 	public:
 	llvm::Value* Codegen(VariableTree *memctx);

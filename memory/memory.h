@@ -6,7 +6,7 @@ class VariableTree {
 		VariableTree(VariableTree* parent = 0);
 		~VariableTree();
 
-		void set(std::string &name, llvm::Value* value);
+		void set(std::string name, llvm::Value* value);
 		llvm::Value* get(std::string &name);
 	
 	protected:
