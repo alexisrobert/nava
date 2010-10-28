@@ -23,5 +23,7 @@ def launch(n) {
 }
 
 def main() {
-	print(fib(40))
+	for i = 1, i < 40, 1 {
+		print(fib(i))
+	}
 }
