@@ -22,7 +22,7 @@
 	int token;
 }
 
-%token <string> TIDENTIFIER TINTEGER
+%token <string> TIDENTIFIER TNUMBER
 %token <token> TJDEF TDEF TIF TELSE TEQ TFOR
 %token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %token <token> TPLUS TMINUS TMULT TDIV TMOD
@@ -55,18 +55,18 @@ block : TLBRACE skip_space stmts skip_space TRBRACE { $$ = $3; }
 stmts : stmt { $$ = new std::vector<ExprAST*>(); $$->push_back($1); }
 	  | stmts stmt { $$->push_back($2); };
 
-stmt : expr { $$ = $1 };
+stmt : expr { $$ = $1; }
 	| TIF TSPACE expr skip_space block skip_space TELSE skip_space block
 	 	{ $$ = new IfExprAST($3, $5, $9); }
 	| TFOR TSPACE TIDENTIFIER TSPACE TEQ TSPACE expr TCOMMA TSPACE expr TCOMMA TSPACE expr skip_space block
 		{ $$ = new ForExprAST($3, $7, $10, $13, $15); };
 
-expr : TINTEGER { $$ = new IntegerExprAST(atoi($1->c_str())); delete $1; }
+expr : TNUMBER { $$ = new NumberExprAST(atof($1->c_str())); delete $1; }
 	 | TIDENTIFIER TLPAREN func_call_args TRPAREN { $$ = new CallExprAST((*$1), $3); delete $1; }
 	 | TIDENTIFIER { $$ = new VariableExprAST((*$1)); delete $1; }
 	 | expr skip_space comparison skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
 	 | expr skip_space bin_operator skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
-	 | TLPAREN expr TRPAREN { $$ = $2 };
+	 | TLPAREN expr TRPAREN { $$ = $2; }
 		
 skip_space : /*empty*/ {}
 		   | skip_space TSPACE {}

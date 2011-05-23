@@ -68,11 +68,11 @@ class RootAST {
 	std::vector<FunctionAST*> *children;
 };
 
-class IntegerExprAST : public ExprAST {
-	int Val;
+class NumberExprAST : public ExprAST {
+	double Val;
 
 	public:
-	IntegerExprAST(int val) : Val(val) {};
+	NumberExprAST(double val) : Val(val) {};
 	llvm::Value* Codegen(VariableTree *memctx);
 };
 

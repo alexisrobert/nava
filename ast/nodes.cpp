@@ -11,7 +11,7 @@ Value *UnimplementedAST::Codegen (VariableTree *memctx) {
 	return ErrorV("Unimplemented AST node met.");
 }
 
-Value *IntegerExprAST::Codegen (VariableTree *memctx) {
+Value *NumberExprAST::Codegen (VariableTree *memctx) {
 	return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), (double)Val);
 }
 
