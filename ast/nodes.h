@@ -40,9 +40,10 @@ class VariableExprAST : public ExprAST {
 class VariableDefAST : public ExprAST {
 	VariableExprAST *LHS;
 	ExprAST *RHS;
+	VariableType Type;
 
 	public:
-	VariableDefAST(VariableExprAST *lhs, ExprAST *rhs) : LHS(lhs), RHS(rhs) {};
+	VariableDefAST(VariableExprAST *lhs, ExprAST *rhs, int type);
 	llvm::Value* Codegen(VariableTree *memctx);
 };
 

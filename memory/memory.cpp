@@ -2,25 +2,38 @@
 #include <llvm/Support/IRBuilder.h>
 #include <llvm/LLVMContext.h>
 
+VariableLeaf::VariableLeaf() {
+	this->value = 0;
+}
+
+VariableLeaf::~VariableLeaf() {
+	if (this->value != 0)
+		delete this->value;
+}
+
 VariableTree::VariableTree(VariableTree *parent) {
 	this->parent = parent;
-	this->values = new std::map<std::string, llvm::AllocaInst*>();
+	this->values = new std::map<std::string, VariableLeaf*>();
 }
 
 VariableTree::~VariableTree() {
 	delete this->values;
 }
 
-void VariableTree::set(std::string name, llvm::AllocaInst* value) {
-	(*values)[name] = value;
+void VariableTree::set(std::string name, VariableType type, llvm::AllocaInst* value) {
+	VariableLeaf *leaf = new VariableLeaf();
+	leaf->type = type;
+	leaf->value = value;
+
+	(*values)[name] = leaf;
 }
 
-llvm::AllocaInst* VariableTree::get(std::string &name) {
-	std::map<std::string, llvm::AllocaInst*>::iterator it = this->values->begin();
-	llvm::AllocaInst *var = 0;
+llvm::AllocaInst* VariableTree::get(std::string &name, VariableType type) {
+	std::map<std::string, VariableLeaf*>::iterator it = this->values->begin();
+	VariableLeaf *var = 0;
 
 	while (it != this->values->end()) {
-		if ((*it).first == name) {
+		if ((*it).first == name && ((*it).second)->type == type) {
 			var = (*it).second;
 			break;
 		}
@@ -33,10 +46,10 @@ llvm::AllocaInst* VariableTree::get(std::string &name) {
 			return NULL;
 		} else {
 			// If the key is not present, check if the parent has the requested symbol name
-			return parent->get(name);
+			return parent->get(name, type);
 		}
 	} else {
-		return var;
+		return var->value;
 	}
 }
 
