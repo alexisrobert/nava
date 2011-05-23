@@ -6,7 +6,7 @@ def f(x) {
 }
 
 def dicho(a,b,n) {
-	c:=((a+b)/2)
+	double c:=((a+b)/2)
 	if n>0 {
 		if (f(a)*f(c))>0 {
 			dicho(c,b,n-1)

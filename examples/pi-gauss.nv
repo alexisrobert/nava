@@ -2,13 +2,13 @@ def print(x) {}
 def sqrt(x) {}
 
 def pi(n) {
-	a:=1
-	b:=(1/sqrt(2))
-	t:=(1/4)
-	p:=1
+	double a:=1
+	double b:=(1/sqrt(2))
+	double t:=(1/4)
+	double p:=1
 
 	for i = 0, i < n, i=(i+1) {
-		a2:=((a+b)/2)
+		double a2:=((a+b)/2)
 		b=(sqrt(a*b))
 		t=(t-(p*(a-a2)*(a-a2)))
 		p=(2*p)
