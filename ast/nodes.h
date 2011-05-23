@@ -37,6 +37,24 @@ class VariableExprAST : public ExprAST {
 	llvm::Value* Codegen(VariableTree *memctx);
 };
 
+class VariableDefAST : public ExprAST {
+	VariableExprAST *LHS;
+	ExprAST *RHS;
+
+	public:
+	VariableDefAST(VariableExprAST *lhs, ExprAST *rhs) : LHS(lhs), RHS(rhs) {};
+	llvm::Value* Codegen(VariableTree *memctx);
+};
+
+class VariableAssignAST : public ExprAST {
+	VariableExprAST *LHS;
+	ExprAST *RHS;
+
+	public:
+	VariableAssignAST(VariableExprAST *lhs, ExprAST *rhs) : LHS(lhs), RHS(rhs) {};
+	llvm::Value* Codegen(VariableTree *memctx);
+};
+
 class CallExprAST : public ExprAST {
 	std::string Name;
 	std::vector<ExprAST*> *Args;

@@ -66,7 +66,8 @@ expr : TNUMBER { $$ = new NumberExprAST(atof($1->c_str())); delete $1; }
 	 | TIDENTIFIER TLPAREN func_call_args TRPAREN { $$ = new CallExprAST((*$1), $3); delete $1; }
 	 | TIDENTIFIER { $$ = new VariableExprAST((*$1)); delete $1; }
 	 | expr skip_space comparison skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
-	 | var_type TSPACE expr skip_space TVARDEF skip_space expr { $$ = new BinaryExprAST(TVARDEF, $3, $7); }
+	 | var_type TSPACE TIDENTIFIER skip_space TVARDEF skip_space expr { $$ = new VariableDefAST(new VariableExprAST((*$3)), $7); }
+	 | TIDENTIFIER skip_space TEQ skip_space expr { $$ = new VariableAssignAST(new VariableExprAST((*$1)), $5); }
 	 | expr skip_space bin_operator skip_space expr { $$ = new BinaryExprAST($3, $1, $5); }
 	 | TLPAREN expr TRPAREN { $$ = $2; }
 		
@@ -88,7 +89,7 @@ func_decl_args : /* empty */ { $$ = new std::vector<std::string>(); }
 
 comparison : TCEQ | TCGEQ | TCGT | TCLEQ | TCLT | TCNEQ;
 
-bin_operator : TEQ | TPLUS | TMINUS | TMULT | TDIV | TMOD;
+bin_operator : TPLUS | TMINUS | TMULT | TDIV | TMOD;
 
 var_type : TDOUBLE;
 
