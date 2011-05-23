@@ -3,8 +3,9 @@
 #include <llvm/Function.h>
 
 enum _VariableType {
-	INTEGER = 0,
-	DOUBLE = 1
+	UNDEFINITE = 0, // Not to be used in Nava code !!!
+	INTEGER = 1,
+	DOUBLE = 2
 };
 
 typedef enum _VariableType VariableType;
@@ -25,10 +26,13 @@ class VariableTree {
 
 		void set(std::string name, VariableType type, llvm::AllocaInst* value);
 		llvm::AllocaInst* get(std::string &name, VariableType type);
+		VariableType getType(std::string &name);
 
 		static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName);
 	
 	protected:
 		std::map<std::string, VariableLeaf*> *values;
 		VariableTree* parent;
+
+		VariableLeaf* getLeaf(std::string &name, VariableType type = UNDEFINITE);
 };

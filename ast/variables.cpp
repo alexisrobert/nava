@@ -24,7 +24,9 @@ Value *VariableAssignAST::Codegen(VariableTree *memctx) {
 	AllocaInst *L;
 
 	// Fetch the alloca
-	L = memctx->get(LHS->getName(), DOUBLE);
+	VariableType type = memctx->getType(LHS->getName());
+
+	L = memctx->get(LHS->getName(), type);
 	if (L == 0) return ErrorV("Variable not found.");
 
 	// Store the content
