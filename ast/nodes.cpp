@@ -19,6 +19,10 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 	Value *L = LHS->Codegen(memctx);
 	Value *R = RHS->Codegen(memctx);
 	if (L == 0 || R == 0) return 0;
+
+	if (L->getType() != R->getType()) {
+		return ErrorV("Incompatible types");
+	}
 	
 	switch (Op) {
 		case TPLUS: return Builder.CreateFAdd(L,R,"addtmp");
