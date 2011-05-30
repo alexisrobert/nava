@@ -14,7 +14,11 @@ Value *UnimplementedAST::Codegen (VariableTree *memctx) {
 }
 
 Value *NumberExprAST::Codegen (VariableTree *memctx) {
-	return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), (double)Val);
+	if (trunc(Val) == Val) { // If the truncated value = the value, it's an int
+		return ConstantInt::get(TypeBuilder<int, false>().get(getGlobalContext()),(int)Val);
+	} else {
+		return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), (double)Val);
+	}
 }
 
 #define GENERATE_BINARY_OPERATION_MACRO(funcfloat, funcint, tmp) \
@@ -38,6 +42,29 @@ Value *NumberExprAST::Codegen (VariableTree *memctx) {
 		return ErrorV("Type error while binary operation.");\
 	}
 
+// TODO : Implement boolean to remove the double converting crap !
+#define GENERATE_BINARY_COMPARAISON_MACRO(funcfloat, funcint, tmp) \
+	/* If one of the two operands is a double, try to cast the other to double */\
+	if (L->getType() == Type::getDoubleTy(getGlobalContext()) || R->getType() == Type::getDoubleTy(getGlobalContext())) {\
+		L = Builder.CreateCast(CastInst::getCastOpcode(L, true, Type::getDoubleTy(getGlobalContext()), true),\
+				L, Type::getDoubleTy(getGlobalContext()));\
+		R = Builder.CreateCast(CastInst::getCastOpcode(R, true, Type::getDoubleTy(getGlobalContext()), true),\
+				R, Type::getDoubleTy(getGlobalContext()));\
+	}\
+	if (L->getType() == TypeBuilder<int,false>().get(llvm::getGlobalContext()) &&\
+			L->getType() == TypeBuilder<int,false>().get(llvm::getGlobalContext())) {\
+	\
+		L = funcint(L,R,tmp);\
+	\
+	} else if (L->getType() == TypeBuilder<llvm::types::ieee_double,false>().get(llvm::getGlobalContext()) &&\
+			L->getType() == TypeBuilder<llvm::types::ieee_double,false>().get(llvm::getGlobalContext())) {\
+	\
+		L = funcfloat(L,R,tmp);\
+	} else {\
+		return ErrorV("Type error while binary comparaison.");\
+	} \
+	\
+	return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
 
 Value *BinaryExprAST::add(Value *L, Value *R, VariableTree *memctx) {
 	GENERATE_BINARY_OPERATION_MACRO(Builder.CreateFAdd, Builder.CreateAdd, "add")
@@ -72,29 +99,12 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 		case TDIV: return this->div(L,R,memctx);
 
 		/* Comparaison operators */
-		case TCLT:
-					L = Builder.CreateFCmpULT(L, R, "cmptmp");
-
-					// Convert i1 (boolean) to double
-					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
-		case TCLEQ:
-					L = Builder.CreateFCmpULE(L, R, "cmptmp");
-					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
-
-		case TCGT:
-					L = Builder.CreateFCmpUGT(L, R, "cmptmp");
-					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
-		case TCGEQ:
-					L = Builder.CreateFCmpUGE(L, R, "cmptmp");
-					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
-
-		case TCEQ:
-					L = Builder.CreateFCmpUEQ(L, R, "cmptmp");
-					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
-		case TCNEQ:
-					L = Builder.CreateFCmpUNE(L, R, "cmptmp");
-					return Builder.CreateUIToFP(L, Type::getDoubleTy(getGlobalContext()));
-
+		case TCLT: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpULT, Builder.CreateICmpULT, "cmplt");
+		case TCLEQ: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpULE, Builder.CreateICmpULE, "cmpleq");
+		case TCGT: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpUGT, Builder.CreateICmpUGT, "cmpgt");
+		case TCGEQ: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpUGE, Builder.CreateICmpUGE, "cmpgeq");
+		case TCEQ: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpUEQ, Builder.CreateICmpEQ, "cmpeq");
+		case TCNEQ: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpUNE, Builder.CreateICmpNE, "cmpneq");
 		default: ErrorV("Unknown binary op met!");
 	}
 }
