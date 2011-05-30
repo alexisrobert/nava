@@ -16,7 +16,7 @@
 	ExprAST *expr;
 	FunctionAST *func;
 	std::vector<ExprAST*> *stmts;
-	std::vector<std::string> *funcdeclargs;
+	std::vector<FunctionTypeAST*> *funcdeclargs;
 	std::vector<ExprAST*> *funcargs;
 	std::string *string;
 	int token;
@@ -83,9 +83,9 @@ func_decl : TDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space bl
 			| TJDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN skip_space block
 				{ $$ = new FunctionAST((*$3), $5, $8); $$->setNative(true); }
 
-func_decl_args : /* empty */ { $$ = new std::vector<std::string>(); }
-			| TIDENTIFIER { $$ = new std::vector<std::string>(); $$->push_back(*$1); delete $1; }
-			| func_decl_args skip_space TCOMMA skip_space TIDENTIFIER { $$->push_back(*$5); delete $5; };
+func_decl_args : /* empty */ { $$ = new std::vector<FunctionTypeAST*>(); }
+			| var_type TSPACE TIDENTIFIER { $$ = new std::vector<FunctionTypeAST*>(); $$->push_back(new FunctionTypeAST(*$3, VariableDefAST::getTypeFromAST($1))); delete $3; }
+			| func_decl_args skip_space TCOMMA skip_space var_type TSPACE TIDENTIFIER { $$->push_back(new FunctionTypeAST(*$7, VariableDefAST::getTypeFromAST($5))); delete $7; };
 
 comparison : TCEQ | TCGEQ | TCGT | TCLEQ | TCLT | TCNEQ;
 

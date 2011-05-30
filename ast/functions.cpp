@@ -37,16 +37,16 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 	}
 
 	for (; Idx != Args->size(); ++AI, ++Idx) {
-		AI->setName((*this->Args)[Idx]);
+		AI->setName((*this->Args)[Idx]->Name);
 
 		// Create the alloca for this variable
-		AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(F, (*this->Args)[Idx]);
+		AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(F, (*this->Args)[Idx]->Name);
 
 		// Store the initial value in the alloca
 		Builder.CreateStore(AI, Alloca);
 
 		// And the update the symbol table
-		newmemctx->set((*this->Args)[Idx], DOUBLE, Alloca);
+		newmemctx->set((*this->Args)[Idx]->Name, (*this->Args)[Idx]->Type, Alloca);
 	}
 
 	/* Inserting all statements */

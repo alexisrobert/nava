@@ -1,7 +1,7 @@
-def print(x) {}
-def sqrt(x) {}
+def print(double x) {}
+def sqrt(double x) {}
 
-def pi(n) {
+def pi(double n) {
 	double a:=1
 	double b:=(1/sqrt(2))
 	double t:=(1/4)

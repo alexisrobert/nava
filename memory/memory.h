@@ -13,6 +13,7 @@ typedef enum _VariableType VariableType;
 class VariableLeaf {
 	public:
 		VariableLeaf();
+		VariableLeaf(llvm::AllocaInst *v, VariableType t);
 		~VariableLeaf();
 
 		llvm::AllocaInst *value;

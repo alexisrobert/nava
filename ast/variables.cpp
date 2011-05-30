@@ -8,11 +8,16 @@ VariableDefAST::VariableDefAST(VariableExprAST *lhs, ExprAST *rhs, int type) {
 	this->LHS = lhs;
 	this->RHS = rhs;
 
+	this->Type = getTypeFromAST(type);
+}
+
+VariableType VariableDefAST::getTypeFromAST(int type) {
 	switch (type) {
 	case TDOUBLE:
-		this->Type = DOUBLE; break;
+		return DOUBLE; break;
 	default:
-		std::cerr << "Unknown type." << std::endl; break;
+		std::cerr << "Unknown type." << std::endl;
+		return UNDEFINITE; break;
 	}
 }
 
