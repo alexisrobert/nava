@@ -2,6 +2,7 @@
 #include <llvm/Instructions.h>
 #include <llvm/Function.h>
 
+// TODO: Remove this useless class.
 class VariableLeaf {
 	public:
 		VariableLeaf();

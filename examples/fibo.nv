@@ -1,27 +1,27 @@
-def print(x) {}
+def print(int x) {}
 
-def fibtail(n, res0, res1) {
-	if n == 0 {
+def fibtail(int n,int res0,int res1) {
+	if n==0 {
 		res1
 	} else {
-		fibtail(n-1, res1, res0+res1)
+		fibtail((n)-(1),res1,(res0+res1))
 	}
 }
 
-def fib(n) {
-	if n < 2 {
+def fib(int n) {
+	if n<2 {
 		1
 	} else {
-		fib(n-1)+fib(n-2)
+		fib((n)-(1))+fib((n)-(2))
 	}
 }
 
-jdef Java_Test_Blah(n) {
+jdef Java_Test_Blah(int n) {
 	fib(n)
 }
 
 def main() {
-	for i = 1, i < 40, i=(i+1) {
+	for i = 1, i<40, i=(i+1) {
 		print(fib(i))
 	}
 }

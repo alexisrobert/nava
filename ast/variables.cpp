@@ -17,6 +17,8 @@ llvm::Type* VariableDefAST::getTypeFromAST(int type) {
 	switch (type) {
 	case TDOUBLE:
 		return llvm::TypeBuilder<llvm::types::ieee_double, true>().get(llvm::getGlobalContext()); break;
+	case TINTEGER:
+		return llvm::TypeBuilder<int, false>().get(llvm::getGlobalContext()); break;
 	default:
 		std::cerr << "Unknown type." << std::endl;
 		return llvm::TypeBuilder<void, true>().get(llvm::getGlobalContext()); break;
@@ -35,7 +37,7 @@ Value *VariableAssignAST::Codegen(VariableTree *memctx) {
 	if (L == 0) return ErrorV("Variable not found.");
 
 	// Check if R is the same type of L
-	if (R->getType() != L->getType()) return ErrorV("Different type assignment.");
+	if (R->getType()->getPointerTo() != L->getType()) return ErrorV("Different type assignment.");
 
 	// Store the content
 	Builder.CreateStore(R, L);
@@ -50,7 +52,7 @@ Value *VariableDefAST::Codegen(VariableTree *memctx) {
 	AllocaInst *L;
 
 	// Create the alloca
-	L = Builder.CreateAlloca(llvm::Type::getDoubleTy(llvm::getGlobalContext()), 0, LHS->getName().c_str());
+	L = Builder.CreateAlloca(R->getType(), 0, LHS->getName().c_str());
 
 	// TODO: Check the type !!!
 	

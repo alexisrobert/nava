@@ -25,6 +25,7 @@ extern int yylineno;
 "else"		return SAVE_TOKEN(TELSE);
 
 "double"	return SAVE_TOKEN(TDOUBLE);
+"int"		return SAVE_TOKEN(TINTEGER);
 
 [a-zA-Z_][a-zA-Z0-9_.]*	SAVE_STRING; return TIDENTIFIER;
 "-"?[0-9]+("."[0-9]*)?		SAVE_STRING; return TNUMBER;

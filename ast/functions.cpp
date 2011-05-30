@@ -7,14 +7,19 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 	VariableTree *newmemctx = new VariableTree(memctx); // New function's memory context
 
 	/* Creating function prototype */
-	std::vector<const Type*> FuncArgs(this->Args->size(), Type::getDoubleTy(getGlobalContext()));
+	std::vector<const Type*> *FuncArgs = new std::vector<const Type*>();
+	for (unsigned i = 0; i < this->Args->size(); i++) {
+		FuncArgs->push_back((*this->Args)[i]->Type);
+	}
 
 	/* Add JNI variables for environment and parent if native. */
 	if (this->native == true) {
-		FuncArgs.insert(FuncArgs.begin(), 2, PointerType::get(OpaqueType::get(getGlobalContext()),0));
+		FuncArgs->insert(FuncArgs->begin(), 2, PointerType::get(OpaqueType::get(getGlobalContext()),0));
 	}
 
-	FunctionType *FT = FunctionType::get(Type::getDoubleTy(getGlobalContext()), FuncArgs, false);
+	FunctionType *FT = FunctionType::get(Type::getDoubleTy(getGlobalContext()), *FuncArgs, false);
+
+	delete FuncArgs;
 
 	Function *F = Function::Create(FT, Function::ExternalLinkage, Name, TheModule);
 
