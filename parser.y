@@ -75,10 +75,10 @@ func_call_args : /*empty*/ { $$ = new std::vector<ExprAST*>(); }
 			   | expr { $$ = new std::vector<ExprAST*>(); $$->push_back($1); }
 			   | func_call_args TCOMMA expr { $$->push_back($3); };
 
-func_decl : TDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN TSPACE block
-		  		{ $$ = new FunctionAST((*$3), $5, $8); }
-			| TJDEF TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN TSPACE block
-				{ $$ = new FunctionAST((*$3), $5, $8); $$->setNative(true); }
+func_decl : TDEF TSPACE var_type TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN TSPACE block
+		  		{ $$ = new FunctionAST((*$5), $7, $10, VariableDefAST::getTypeFromAST($3)); }
+			| TJDEF TSPACE var_type TSPACE TIDENTIFIER TLPAREN func_decl_args TRPAREN TSPACE block
+				{ $$ = new FunctionAST((*$5), $7, $10, VariableDefAST::getTypeFromAST($3)); $$->setNative(true); }
 
 func_decl_args : /* empty */ { $$ = new std::vector<FunctionTypeAST*>(); }
 			| var_type TSPACE TIDENTIFIER { $$ = new std::vector<FunctionTypeAST*>(); $$->push_back(new FunctionTypeAST(*$3, VariableDefAST::getTypeFromAST($1))); delete $3; }

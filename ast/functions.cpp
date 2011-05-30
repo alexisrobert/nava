@@ -17,7 +17,7 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 		FuncArgs->insert(FuncArgs->begin(), 2, PointerType::get(OpaqueType::get(getGlobalContext()),0));
 	}
 
-	FunctionType *FT = FunctionType::get(Type::getDoubleTy(getGlobalContext()), *FuncArgs, false);
+	FunctionType *FT = FunctionType::get(RetType, *FuncArgs, false);
 
 	delete FuncArgs;
 

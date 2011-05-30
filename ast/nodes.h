@@ -77,12 +77,14 @@ class FunctionAST {
 	std::string Name;
 	std::vector<FunctionTypeAST*> *Args;
 	std::vector<ExprAST*> *Body;
+	llvm::Type *RetType;
 	bool native;
 
 	public:
 	FunctionAST(const std::string &name,
 			std::vector<FunctionTypeAST*> *args,
-			std::vector<ExprAST*> *body) : Name(name), Args(args), Body(body) { this->native = false; };
+			std::vector<ExprAST*> *body,
+			llvm::Type *rettype) : Name(name), Args(args), Body(body), RetType(rettype) { this->native = false; };
 	
 	void setNative(bool native) { this->native = native; };
 	llvm::Function* Codegen(VariableTree *memctx);
