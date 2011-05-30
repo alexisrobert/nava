@@ -20,7 +20,7 @@ class VariableTree {
 		void set(std::string name, llvm::AllocaInst* value);
 		llvm::AllocaInst* get(std::string &name);
 
-		static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName);
+		static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName, const llvm::Type *type);
 	
 	protected:
 		std::map<std::string, VariableLeaf*> *values;

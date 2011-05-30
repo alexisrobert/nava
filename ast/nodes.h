@@ -110,6 +110,12 @@ class BinaryExprAST : public ExprAST {
 	public:
 	BinaryExprAST(int op, ExprAST *lhs, ExprAST *rhs) : Op(op), LHS(lhs), RHS(rhs) {};
 	llvm::Value* Codegen(VariableTree *memctx);
+
+	llvm::Value* add(llvm::Value *L, llvm::Value *R, VariableTree *memctx);
+	llvm::Value* sub(llvm::Value *L, llvm::Value *R, VariableTree *memctx);
+	llvm::Value* mul(llvm::Value *L, llvm::Value *R, VariableTree *memctx);
+	llvm::Value* mod(llvm::Value *L, llvm::Value *R, VariableTree *memctx);
+	llvm::Value* div(llvm::Value *L, llvm::Value *R, VariableTree *memctx);
 };
 
 class IfExprAST : public ExprAST {

@@ -45,7 +45,7 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 		AI->setName((*this->Args)[Idx]->Name);
 
 		// Create the alloca for this variable
-		AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(F, (*this->Args)[Idx]->Name);
+		AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(F, (*this->Args)[Idx]->Name, (*this->Args)[Idx]->Type);
 
 		// Store the initial value in the alloca
 		Builder.CreateStore(AI, Alloca);

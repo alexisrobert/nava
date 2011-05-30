@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <llvm/InstrTypes.h>
+#include <llvm/Support/TypeBuilder.h>
 
 using namespace llvm;
 
@@ -15,21 +17,59 @@ Value *NumberExprAST::Codegen (VariableTree *memctx) {
 	return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), (double)Val);
 }
 
+#define GENERATE_BINARY_OPERATION_MACRO(funcfloat, funcint, tmp) \
+	/* If one of the two operands is a double, try to cast the other to double */\
+	if (L->getType() == Type::getDoubleTy(getGlobalContext()) || R->getType() == Type::getDoubleTy(getGlobalContext())) {\
+		L = Builder.CreateCast(CastInst::getCastOpcode(L, true, Type::getDoubleTy(getGlobalContext()), true),\
+				L, Type::getDoubleTy(getGlobalContext()));\
+		R = Builder.CreateCast(CastInst::getCastOpcode(R, true, Type::getDoubleTy(getGlobalContext()), true),\
+				R, Type::getDoubleTy(getGlobalContext()));\
+	}\
+	if (L->getType() == TypeBuilder<int,false>().get(llvm::getGlobalContext()) &&\
+			L->getType() == TypeBuilder<int,false>().get(llvm::getGlobalContext())) {\
+	\
+		return funcint(L,R,tmp);\
+	\
+	} else if (L->getType() == TypeBuilder<llvm::types::ieee_double,false>().get(llvm::getGlobalContext()) &&\
+			L->getType() == TypeBuilder<llvm::types::ieee_double,false>().get(llvm::getGlobalContext())) {\
+	\
+		return funcfloat(L,R,tmp);\
+	} else {\
+		return ErrorV("Type error while binary operation.");\
+	}
+
+
+Value *BinaryExprAST::add(Value *L, Value *R, VariableTree *memctx) {
+	GENERATE_BINARY_OPERATION_MACRO(Builder.CreateFAdd, Builder.CreateAdd, "add")
+}
+
+Value *BinaryExprAST::sub(Value *L, Value *R, VariableTree *memctx) {
+	GENERATE_BINARY_OPERATION_MACRO(Builder.CreateFSub, Builder.CreateSub, "sub")
+}
+
+Value *BinaryExprAST::mul(Value *L, Value *R, VariableTree *memctx) {
+	GENERATE_BINARY_OPERATION_MACRO(Builder.CreateFMul, Builder.CreateMul, "mul")
+}
+
+Value *BinaryExprAST::mod(Value *L, Value *R, VariableTree *memctx) {
+	GENERATE_BINARY_OPERATION_MACRO(Builder.CreateFRem, Builder.CreateSRem, "mod")
+}
+
+Value *BinaryExprAST::div(Value *L, Value *R, VariableTree *memctx) {
+	GENERATE_BINARY_OPERATION_MACRO(Builder.CreateFDiv, Builder.CreateSDiv, "div")
+}
+
 Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 	Value *L = LHS->Codegen(memctx);
 	Value *R = RHS->Codegen(memctx);
 	if (L == 0 || R == 0) return 0;
 
-	if (L->getType() != R->getType()) {
-		return ErrorV("Incompatible types");
-	}
-	
 	switch (Op) {
-		case TPLUS: return Builder.CreateFAdd(L,R,"addtmp");
-		case TMINUS: return Builder.CreateFSub(L,R,"subtmp");
-		case TMULT: return Builder.CreateFMul(L,R,"multmp");
-		case TMOD: return Builder.CreateFRem(L,R,"modtmp");
-		case TDIV: return Builder.CreateFDiv(L,R,"divtmp");
+		case TPLUS: return this->add(L,R,memctx);
+		case TMINUS: return this->sub(L,R,memctx);
+		case TMULT: return this->mul(L,R,memctx);
+		case TMOD: return this->mod(L,R,memctx);
+		case TDIV: return this->div(L,R,memctx);
 
 		/* Comparaison operators */
 		case TCLT:
@@ -167,7 +207,7 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 	Builder.SetInsertPoint(LoopBB); // We now insert code in the loop
 
 	// Update the memory context to set the variable equal to the PHINode
-	AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(TheFunction, (*Varname));
+	AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(TheFunction, (*Varname), StartVal->getType());
 	newmemctx->set((*Varname), Alloca);
 
 	Value *lastval = Constant::getNullValue(Type::getDoubleTy(getGlobalContext()));

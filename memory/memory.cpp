@@ -52,8 +52,8 @@ llvm::AllocaInst* VariableTree::get(std::string &name) {
 	}
 }
 
-llvm::AllocaInst* VariableTree::CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName) {
+llvm::AllocaInst* VariableTree::CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName, const llvm::Type *type) {
 	llvm::IRBuilder<> TmpB(&TheFunction->getEntryBlock(), TheFunction->getEntryBlock().begin());
 
-	return TmpB.CreateAlloca(llvm::Type::getDoubleTy(llvm::getGlobalContext()), 0, VarName.c_str());
+	return TmpB.CreateAlloca(type, 0, VarName.c_str());
 }
