@@ -60,7 +60,7 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 }
 
 Value *VariableExprAST::Codegen (VariableTree *memctx) {
-	Value *V = memctx->get(Name, DOUBLE);
+	Value *V = memctx->get(Name);
 
 	if (V == 0) return ErrorV((std::string("Variable '")+Name+"' not found in symbol table.").c_str());
 
@@ -168,7 +168,7 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 
 	// Update the memory context to set the variable equal to the PHINode
 	AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(TheFunction, (*Varname));
-	newmemctx->set((*Varname), DOUBLE, Alloca);
+	newmemctx->set((*Varname), Alloca);
 
 	Value *lastval = Constant::getNullValue(Type::getDoubleTy(getGlobalContext()));
 

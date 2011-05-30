@@ -40,12 +40,12 @@ class VariableExprAST : public ExprAST {
 class VariableDefAST : public ExprAST {
 	VariableExprAST *LHS;
 	ExprAST *RHS;
-	VariableType Type;
+	llvm::Type *Type;
 
 	public:
 	VariableDefAST(VariableExprAST *lhs, ExprAST *rhs, int type);
 	llvm::Value* Codegen(VariableTree *memctx);
-	static VariableType getTypeFromAST(int type);
+	static llvm::Type* getTypeFromAST(int type);
 };
 
 class VariableAssignAST : public ExprAST {
@@ -68,9 +68,9 @@ class CallExprAST : public ExprAST {
 
 class FunctionTypeAST {	
 	public:
-	FunctionTypeAST(const std::string &name, VariableType type) : Name(name), Type(type) {};
+	FunctionTypeAST(const std::string &name, llvm::Type *type) : Name(name), Type(type) {};
 	std::string Name;
-	VariableType Type;
+	llvm::Type *Type;
 };
 
 class FunctionAST {

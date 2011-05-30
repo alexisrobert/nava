@@ -2,6 +2,8 @@
 #include "globals.h"
 #include "../parser.hpp"
 
+#include <llvm/Support/TypeBuilder.h>
+
 using namespace llvm;
 
 VariableDefAST::VariableDefAST(VariableExprAST *lhs, ExprAST *rhs, int type) {
@@ -11,13 +13,13 @@ VariableDefAST::VariableDefAST(VariableExprAST *lhs, ExprAST *rhs, int type) {
 	this->Type = getTypeFromAST(type);
 }
 
-VariableType VariableDefAST::getTypeFromAST(int type) {
+llvm::Type* VariableDefAST::getTypeFromAST(int type) {
 	switch (type) {
 	case TDOUBLE:
-		return DOUBLE; break;
+		return llvm::TypeBuilder<llvm::types::ieee_double, true>().get(llvm::getGlobalContext()); break;
 	default:
 		std::cerr << "Unknown type." << std::endl;
-		return UNDEFINITE; break;
+		return llvm::TypeBuilder<void, true>().get(llvm::getGlobalContext()); break;
 	}
 }
 
@@ -29,10 +31,11 @@ Value *VariableAssignAST::Codegen(VariableTree *memctx) {
 	AllocaInst *L;
 
 	// Fetch the alloca
-	VariableType type = memctx->getType(LHS->getName());
-
-	L = memctx->get(LHS->getName(), type);
+	L = memctx->get(LHS->getName());
 	if (L == 0) return ErrorV("Variable not found.");
+
+	// Check if R is the same type of L
+	if (R->getType() != L->getType()) return ErrorV("Different type assignment.");
 
 	// Store the content
 	Builder.CreateStore(R, L);
@@ -48,8 +51,10 @@ Value *VariableDefAST::Codegen(VariableTree *memctx) {
 
 	// Create the alloca
 	L = Builder.CreateAlloca(llvm::Type::getDoubleTy(llvm::getGlobalContext()), 0, LHS->getName().c_str());
+
+	// TODO: Check the type !!!
 	
-	memctx->set(LHS->getName(), this->Type, L);
+	memctx->set(LHS->getName(), L);
 
 	// Store the content
 	Builder.CreateStore(R, L);

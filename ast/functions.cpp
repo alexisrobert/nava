@@ -46,7 +46,7 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 		Builder.CreateStore(AI, Alloca);
 
 		// And the update the symbol table
-		newmemctx->set((*this->Args)[Idx]->Name, (*this->Args)[Idx]->Type, Alloca);
+		newmemctx->set((*this->Args)[Idx]->Name, Alloca);
 	}
 
 	/* Inserting all statements */

@@ -20,28 +20,19 @@ VariableTree::~VariableTree() {
 	delete this->values;
 }
 
-void VariableTree::set(std::string name, VariableType type, llvm::AllocaInst* value) {
+void VariableTree::set(std::string name, llvm::AllocaInst* value) {
 	VariableLeaf *leaf = new VariableLeaf();
-	leaf->type = type;
 	leaf->value = value;
 
 	(*values)[name] = leaf;
 }
 
-llvm::AllocaInst* VariableTree::get(std::string &name, VariableType type) {
-	return getLeaf(name, type)->value;
-}
-
-VariableType VariableTree::getType(std::string &name) {
-	return getLeaf(name)->type;
-}
-
-VariableLeaf* VariableTree::getLeaf(std::string &name, VariableType type) {
+llvm::AllocaInst* VariableTree::get(std::string &name) {
 	std::map<std::string, VariableLeaf*>::iterator it = this->values->begin();
 	VariableLeaf *var = 0;
 
 	while (it != this->values->end()) {
-		if ((*it).first == name && ((type == UNDEFINITE) || (((*it).second)->type == type))) {
+		if ((*it).first == name) {
 			var = (*it).second;
 			break;
 		}
@@ -54,10 +45,10 @@ VariableLeaf* VariableTree::getLeaf(std::string &name, VariableType type) {
 			return NULL;
 		} else {
 			// If the key is not present, check if the parent has the requested symbol name
-			return parent->getLeaf(name, type);
+			return parent->get(name);
 		}
 	} else {
-		return var;
+		return var->value;
 	}
 }
 
