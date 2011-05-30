@@ -193,7 +193,7 @@ Value *IfExprAST::Codegen (VariableTree *memctx) {
 	TheFunction->getBasicBlockList().push_back(MergeBB);
 	Builder.SetInsertPoint(MergeBB);
 
-	PHINode *PN = Builder.CreatePHI(Type::getDoubleTy(getGlobalContext()), "iftmp");
+	PHINode *PN = Builder.CreatePHI(ThenV->getType(), "iftmp");
 	PN->addIncoming(ThenV, ThenBB);
 	PN->addIncoming(ElseV, ElseBB);
 

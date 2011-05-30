@@ -3,6 +3,11 @@
 /* This is a VERY basic standard library for Nava */
 
 extern "C" {
+	int printint(int data) {
+		printf("%d\n", data);
+		return data;
+	}
+
 	double print(double data) {
 		printf("%f\n", data);
 		return data;

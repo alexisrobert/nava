@@ -1,4 +1,12 @@
-def int print(int x) {}
+def int printint(int x) {}
+
+def int fibtail(int n,int res0,int res1) {
+	if n==0 {
+		res1
+	} else {
+		fibtail((n)-(1),res1,(res0+res1))
+	}
+}
 
 def int fib(int n) {
 	if n<2 {
@@ -13,7 +21,5 @@ jdef int Java_Test_Blah(int n) {
 }
 
 def int main() {
-	for i = 1, i<40, i=(i+1) {
-		print(fib(i))
-	}
+	printint(fib(40))
 }
