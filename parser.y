@@ -22,7 +22,7 @@
 	int token;
 }
 
-%token <string> TIDENTIFIER TNUMBER
+%token <string> TIDENTIFIER TINUMBER TFNUMBER
 %token <token> TJDEF TDEF TIF TELSE TEQ TFOR
 %token <token> TCEQ TCNEQ TCGEQ TCGT TCLEQ TCLT
 %token <token> TPLUS TMINUS TMULT TDIV TMOD
@@ -64,7 +64,8 @@ stmt : expr { $$ = $1; }
 
 expr : TLPAREN expr TRPAREN { $$ = $2; } /* Parenthesis */
 	 | expr bin_operator expr { $$ = new BinaryExprAST($2, $1, $3); }
-	 | TNUMBER { $$ = new NumberExprAST(atof($1->c_str())); delete $1; } /* Number */
+	 | TINUMBER { $$ = new NumberExprAST(atof($1->c_str()), false); delete $1; } /* Number */
+	 | TFNUMBER { $$ = new NumberExprAST(atof($1->c_str()), true); delete $1; }
 	 | TIDENTIFIER TLPAREN func_call_args TRPAREN { $$ = new CallExprAST((*$1), $3); delete $1; } /* Function call */
 	 | TIDENTIFIER { $$ = new VariableExprAST((*$1)); delete $1; }
 	 | expr comparison expr { $$ = new BinaryExprAST($2, $1, $3); }

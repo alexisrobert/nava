@@ -99,9 +99,10 @@ class RootAST {
 
 class NumberExprAST : public ExprAST {
 	double Val;
+	bool DoubleType;
 
 	public:
-	NumberExprAST(double val) : Val(val) {};
+	NumberExprAST(double val, bool doubleType=false) : Val(val) { this->DoubleType = doubleType; };
 	llvm::Value* Codegen(VariableTree *memctx);
 };
 

@@ -14,7 +14,7 @@ Value *UnimplementedAST::Codegen (VariableTree *memctx) {
 }
 
 Value *NumberExprAST::Codegen (VariableTree *memctx) {
-	if (trunc(Val) == Val) { // If the truncated value = the value, it's an int
+	if (!this->DoubleType) {
 		return ConstantInt::get(TypeBuilder<int, false>().get(getGlobalContext()),(int)Val);
 	} else {
 		return ConstantFP::get(Type::getDoubleTy(getGlobalContext()), (double)Val);
