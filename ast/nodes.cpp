@@ -216,10 +216,6 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 	Builder.CreateBr(LoopBB);
 	Builder.SetInsertPoint(LoopBB); // We now insert code in the loop
 
-	// Update the memory context to set the variable equal to the PHINode
-	AllocaInst *Alloca = VariableTree::CreateEntryBlockAlloca(TheFunction, (*Varname), StartVal->getType());
-	newmemctx->set((*Varname), Alloca);
-
 	Value *lastval = Constant::getNullValue(Type::getDoubleTy(getGlobalContext()));
 
 	for (int i = 0; i < Body->size(); i++) {

@@ -135,11 +135,10 @@ class IfExprAST : public ExprAST {
 class ForExprAST : public ExprAST {
 	ExprAST *Start, *Stop, *Step;
 	std::vector<ExprAST*> *Body;
-	std::string *Varname;
 
 	public:
-	ForExprAST(std::string *varname, ExprAST *start, ExprAST *stop, ExprAST *step, std::vector<ExprAST*> *body)
-				: Start(start), Stop(stop), Step(step), Body(body), Varname(varname) {};
+	ForExprAST(ExprAST *start, ExprAST *stop, ExprAST *step, std::vector<ExprAST*> *body)
+				: Start(start), Stop(stop), Step(step), Body(body) {};
 
 	llvm::Value* Codegen(VariableTree *memctx);
 };

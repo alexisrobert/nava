@@ -59,8 +59,8 @@ stmts : stmt { $$ = new std::vector<ExprAST*>(); $$->push_back($1); }
 stmt : expr { $$ = $1; }
 	| TIF TSPACE expr TSPACE block TSPACE TELSE TSPACE block
 	 	{ $$ = new IfExprAST($3, $5, $9); }
-	| TFOR TSPACE TIDENTIFIER TSPACE TEQ TSPACE expr TCOMMA TSPACE expr TCOMMA TSPACE expr TSPACE block
-		{ $$ = new ForExprAST($3, $7, $10, $13, $15); };
+	| TFOR TSPACE expr TCOMMA TSPACE expr TCOMMA TSPACE expr TSPACE block
+		{ $$ = new ForExprAST($3, $6, $9, $11); };
 
 expr : TLPAREN expr TRPAREN { $$ = $2; } /* Parenthesis */
 	 | expr bin_operator expr { $$ = new BinaryExprAST($2, $1, $3); }

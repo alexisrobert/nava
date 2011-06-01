@@ -7,7 +7,7 @@ def double pi(double n) {
 	double t:=(1/4.0)
 	double p:=1.0
 
-	for i = 0.0, i<n, i=(i+1) {
+	for (double i:=0.0), i<n, i=(i+1) {
 		double a2:=((a+b)/2)
 		b=(sqrt(a*b))
 		t=(t-(p*(a-a2)*(a-a2)))
