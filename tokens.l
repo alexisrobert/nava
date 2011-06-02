@@ -1,3 +1,5 @@
+%option noyywrap
+
 %{
 #include <iostream>
 #include <string>
@@ -6,7 +8,6 @@
 
 #define SAVE_STRING (yylval.string = new std::string(yytext,yyleng))
 #define SAVE_TOKEN(t) (yylval.token = t)
-extern "C" int yywrap() {}
 extern int yylineno;
 %}
 
