@@ -105,7 +105,7 @@ Value *BinaryExprAST::Codegen (VariableTree *memctx) {
 		case TCGEQ: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpUGE, Builder.CreateICmpUGE, "cmpgeq");
 		case TCEQ: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpUEQ, Builder.CreateICmpEQ, "cmpeq");
 		case TCNEQ: GENERATE_BINARY_COMPARAISON_MACRO(Builder.CreateFCmpUNE, Builder.CreateICmpNE, "cmpneq");
-		default: ErrorV("Unknown binary op met!");
+		default: return ErrorV("Unknown binary op met!");
 	}
 }
 
@@ -161,7 +161,7 @@ Value *IfExprAST::Codegen (VariableTree *memctx) {
 	Value *ThenV = 0;
 	VariableTree *ThenMemctx = new VariableTree(memctx);
 
-	for (int i = 0; i < Then->size(); i++) {
+	for (unsigned int i = 0; i < Then->size(); i++) {
 		ThenV = (*Then)[i]->Codegen(ThenMemctx);
 
 		if (ThenV == 0) return 0;
@@ -178,7 +178,7 @@ Value *IfExprAST::Codegen (VariableTree *memctx) {
 
 	Value *ElseV = 0;
 	VariableTree *ElseMemctx = new VariableTree(memctx);
-	for (int i = 0; i < Else->size(); i++) {
+	for (unsigned int i = 0; i < Else->size(); i++) {
 		ElseV = (*Else)[i]->Codegen(ElseMemctx);
 
 		if (ElseV == 0) return 0;
@@ -218,7 +218,7 @@ Value *ForExprAST::Codegen(VariableTree *memctx) {
 
 	Value *lastval = Constant::getNullValue(Type::getDoubleTy(getGlobalContext()));
 
-	for (int i = 0; i < Body->size(); i++) {
+	for (unsigned int i = 0; i < Body->size(); i++) {
 		if ((lastval = (*Body)[i]->Codegen(newmemctx)) == 0) return 0;
 	}
 

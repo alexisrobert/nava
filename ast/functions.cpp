@@ -57,7 +57,7 @@ Function *FunctionAST::Codegen(VariableTree *memctx) {
 	/* Inserting all statements */
 	Value *last_value = 0;
 	
-	for (int i = 0; i < Body->size(); i++) {
+	for (unsigned int i = 0; i < Body->size(); i++) {
 		last_value = (*Body)[i]->Codegen(newmemctx); // Codegen and insert
 
 		if (last_value == 0) break;

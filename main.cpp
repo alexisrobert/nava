@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 
 	/* Now, the AST is in rootnode, we just need to generate LLVM bytecode */
 	VariableTree *memroot = new VariableTree();
-	for (int i = 0; i < rootnode->children->size(); i++) {
+	for (unsigned int i = 0; i < rootnode->children->size(); i++) {
 		(*rootnode->children)[i]->Codegen(memroot);
 	}
 
