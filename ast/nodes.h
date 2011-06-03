@@ -40,12 +40,12 @@ class VariableExprAST : public ExprAST {
 class VariableDefAST : public ExprAST {
 	VariableExprAST *LHS;
 	ExprAST *RHS;
-	llvm::Type *Type;
+	const llvm::Type *Type;
 
 	public:
 	VariableDefAST(VariableExprAST *lhs, ExprAST *rhs, int type);
 	llvm::Value* Codegen(VariableTree *memctx);
-	static llvm::Type* getTypeFromAST(int type);
+	static const llvm::Type* getTypeFromAST(int type);
 };
 
 class VariableAssignAST : public ExprAST {
@@ -68,23 +68,23 @@ class CallExprAST : public ExprAST {
 
 class FunctionTypeAST {	
 	public:
-	FunctionTypeAST(const std::string &name, llvm::Type *type) : Name(name), Type(type) {};
+	FunctionTypeAST(const std::string &name, const llvm::Type *type) : Name(name), Type(type) {};
 	std::string Name;
-	llvm::Type *Type;
+	const llvm::Type *Type;
 };
 
 class FunctionAST {
 	std::string Name;
 	std::vector<FunctionTypeAST*> *Args;
 	std::vector<ExprAST*> *Body;
-	llvm::Type *RetType;
+	const llvm::Type *RetType;
 	bool native;
 
 	public:
 	FunctionAST(const std::string &name,
 			std::vector<FunctionTypeAST*> *args,
 			std::vector<ExprAST*> *body,
-			llvm::Type *rettype) : Name(name), Args(args), Body(body), RetType(rettype) { this->native = false; };
+			const llvm::Type *rettype) : Name(name), Args(args), Body(body), RetType(rettype) { this->native = false; };
 	
 	void setNative(bool native) { this->native = native; };
 	llvm::Function* Codegen(VariableTree *memctx);

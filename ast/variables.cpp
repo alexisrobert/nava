@@ -13,7 +13,7 @@ VariableDefAST::VariableDefAST(VariableExprAST *lhs, ExprAST *rhs, int type) {
 	this->Type = getTypeFromAST(type);
 }
 
-llvm::Type* VariableDefAST::getTypeFromAST(int type) {
+const llvm::Type* VariableDefAST::getTypeFromAST(int type) {
 	switch (type) {
 	case TDOUBLE:
 		return llvm::TypeBuilder<llvm::types::ieee_double, true>().get(llvm::getGlobalContext()); break;
