@@ -1,0 +1,33 @@
+Nava, an LLVM based programming language with automatic generation of JNI interfaces
+
+Alexis ROBERT <alexis.robert@gmail.com>
+
+======================================================================================
+
+Requirements:
+
+LLVM 2.8+, flex, bison, CMake
+
+--
+
+Build :
+
+cmake .
+make
+
+--
+
+Usage :
+
+# This outputs LLVM bytecode on stderr
+./nava < examples/fibo.nv
+
+# This outputs a binary (if you have a main() function)
+./build-script.sh examples/fibo.nv
+
+# This outputs a shared library
+./build-lib.sh examples/fibo.nv
+
+--
+
+ARM cross-compilation for Android : upcoming.
