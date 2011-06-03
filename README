@@ -28,6 +28,5 @@ Usage :
 # This outputs a shared library
 ./build-lib.sh examples/fibo.nv
 
---
-
-ARM cross-compilation for Android : upcoming.
+# This outputs a shared library for Android ARM using NDK
+./build-cross-arm-android.sh examples/fibo.nv
