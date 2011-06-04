@@ -55,6 +55,8 @@ Accessing external symbols :
 
 	If you link it with libm.so, your program will have sqrt.
 
+	You can use it to do simple bindings.
+
 -> Conditions
 
 	if expr {
