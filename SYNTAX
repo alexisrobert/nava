@@ -1,0 +1,100 @@
+Nava syntax documentation
+=========================
+
+-> Types
+
+Current supported types are int and double. These are implemented by LLVM.
+
+-> Constants
+
+3.0 represents a double, and 3 represents an int.
+
+-> Variable definition
+
+	double varname:=3.0
+
+-> Changing a variable content
+
+	varname=4.0
+
+WARNING ! varname needs to be defined. We currently have no implicit casting.
+
+-> Binary operators
+
+We support + / - * % < > <= => == !=
+
+Binary operators is the only thing which supports implicit casting, that means
+2/3 outputs an int and 2/3.0 implicit casts 2 to double and returns a double.
+
+-> Function definition
+
+Nava function :
+
+	def int funcname(int arg1, double arg2) {
+		... function content ...
+	}
+
+JNI accessible function :
+
+	jdef int Java_org_package_Class_funcname(int arg1, double arg2) {
+		... function content ...
+	}
+	
+	This is exported as funcname in the class Class in package org.package.
+	
+	You can't currently call JNI functions from Nava code.
+
+Accessing external symbols :
+
+	def double funcname(double x) {}
+
+	A function with no body tells Nava to treat it as extern. If you link the code
+	with funcname, you can access it.
+	
+	Example : def double sin(double x) {}
+
+	If you link it with libm.so, your program will have sqrt.
+
+-> Conditions
+
+	if expr {
+		... then part ...
+	}
+	
+	if expr {
+		... then part ...
+	} else {
+		... else part ...
+	}
+
+-> for loops
+
+	for startexpr, stopexpr, stepexpr {
+		... loop content ...
+	}
+
+Executes startexpr at start. stepexpr is called at each step.
+If stopexpr is true, stop the loop.
+
+Example :
+
+	for double i:=2.0, i<2, i=(i+1) {
+		... loop content ...
+	}
+
+-> Nava standard library
+
+Nava uses extern linking to support a very light standard library. You need
+to embed stdlib/stdlib.cpp in the final code to access the symbols.
+
+Print an int to stdout :
+
+	def int printint(int data) {}
+
+Print a double to stdout :
+
+	def double print(double data) {}
+
+Read a double from stdout :
+
+	def double read() {}

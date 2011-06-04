@@ -4,6 +4,10 @@ Alexis ROBERT <alexis.robert@gmail.com>
 
 ======================================================================================
 
+See SYNTAX file to learn how to program in Nava.
+
+--
+
 Requirements:
 
 LLVM 2.8+, flex, bison, CMake
