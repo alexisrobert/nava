@@ -33,4 +33,5 @@ Usage :
 ./build-lib.sh examples/fibo.nv
 
 # This outputs a shared library for Android ARM using NDK
+export AROOT="/path/to/android-ndk/"
 ./build-cross-arm-android.sh examples/fibo.nv
