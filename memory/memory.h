@@ -25,16 +25,6 @@
 #include <llvm/Instructions.h>
 #include <llvm/Function.h>
 
-// TODO: Remove this useless class.
-class VariableLeaf {
-	public:
-		VariableLeaf();
-		VariableLeaf(llvm::AllocaInst *v);
-		~VariableLeaf();
-
-		llvm::AllocaInst *value;
-};
-
 class VariableTree {
 	public:
 		VariableTree(VariableTree* parent = 0);
@@ -46,6 +36,6 @@ class VariableTree {
 		static llvm::AllocaInst* CreateEntryBlockAlloca(llvm::Function *TheFunction, const std::string &VarName, const llvm::Type *type);
 	
 	protected:
-		std::map<std::string, VariableLeaf*> *values;
+		std::map<std::string, llvm::AllocaInst*> *values;
 		VariableTree* parent;
 };
