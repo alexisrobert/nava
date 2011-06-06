@@ -1,8 +1,8 @@
 def double print(double x) {}
-def double sin(double x) {}
+def double llvm.sin.f64(double Val) {}
 
 def double f(double x) {
-	sin(x)
+	llvm.sin.f64(x)
 }
 
 def double dicho(double a,double b,int n) {
