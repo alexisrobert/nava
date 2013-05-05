@@ -2,6 +2,14 @@ Nava, an LLVM based programming language with automatic generation of JNI interf
 
 Alexis ROBERT <alexis.robert@gmail.com>
 
+Maybe you need to write a binding from C code to Java and you don’t want to write boiler-plate code or maybe you run into the issue of optimizing huge mathematical computations in Java.
+The speed issue is mainly true in Android where you’re running your program in a very constrained environment and where the user don’t want to wait while he expect more and more complex features from your application.
+A common workaround is to write these parts in C/C++ and wrap them into a JNI glue, but sometimes, you need to prototype some code fast, that’s why you choose Java over C++, right ?
+
+The goal of Nava is to create a prototype of an LLVM-based compiler which generates x86/ARM native code with automatic generation of JNI interfaces.
+
+Please note that this is nearly my first attempt in writing compilers, and it’s more a quick'n'dirty test than anything else.
+
 ======================================================================================
 
 See SYNTAX file to learn how to program in Nava.
